@@ -15,7 +15,7 @@ if [[ ! -f "$DATA_DIR/PG_VERSION" ]]; then
   "$PG_BIN/initdb" -D "$DATA_DIR" --auth=trust --username="$DB_USER" --no-locale >/dev/null
 fi
 
-if ! pg_isready -h 127.0.0.1 -p "$PORT" >/dev/null 2>&1; then
+if ! "$PG_BIN/pg_ctl" -D "$DATA_DIR" status >/dev/null 2>&1; then
   "$PG_BIN/pg_ctl" -D "$DATA_DIR" -l "$LOG_FILE" \
     -o "-p $PORT -h 127.0.0.1 -k $SOCKET_DIR" start >/dev/null
 fi
