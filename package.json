@@ -1,0 +1,18 @@
+{
+  "name": "anime-platform",
+  "private": true,
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=12 <13"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @anime-platform/web --filter @anime-platform/api dev",
+    "build": "pnpm -r --workspace-concurrency=1 build",
+    "lint": "pnpm -r --workspace-concurrency=1 --if-present lint",
+    "typecheck": "pnpm -r --workspace-concurrency=1 --if-present typecheck",
+    "test": "pnpm -r --workspace-concurrency=1 --if-present test",
+    "prisma:generate": "pnpm --filter @anime-platform/api prisma:generate",
+    "prisma:validate": "pnpm --filter @anime-platform/api prisma:validate"
+  }
+}

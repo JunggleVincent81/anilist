@@ -1,0 +1,14 @@
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+coverage/
+.turbo/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+apps/api/src/generated/prisma/
+apps/api/src/graphql/schema.gql
+.DS_Store
