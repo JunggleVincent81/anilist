@@ -1,5 +1,45 @@
 # Documentation Changelog
 
+## 2026-10-06 — Phase 2 UI Foundation
+
+### Added
+
+- shadcn/ui with Base UI and Nova
+- semantic dark-first design system
+- Geist typography system
+- reusable Button, Input, Textarea, Select, Checkbox and Switch
+- Dialog, Sheet, Dropdown, Tooltip and Tabs
+- Avatar, Badge, Skeleton and toast feedback
+- LoadingState, EmptyState and ErrorState
+- PageContainer, ContentSection, SectionHeader and ResponsiveGrid
+- desktop application shell
+- mobile application shell
+- AnimeCard and AnimeCardSkeleton
+- internal `/dev/ui` showcase
+- placeholder navigation routes for UI validation
+
+### Changed
+
+- primary palette adjusted for accessible foreground contrast
+- form control boundaries increased in visibility
+- keyboard focus indicators strengthened
+- mobile interaction targets improved
+- AnimeCard navigation reduced to one primary tab stop
+- development scripts made compatible with native Windows execution
+- Prisma Client regenerated after dependency reinstall
+
+### Removed
+
+- unused `next-themes` dependency
+
+### Accessibility
+
+- skip-to-content navigation
+- reduced-motion baseline
+- fixed/sticky navigation focus protection
+- mobile safe-area support
+- narrow-screen tabs overflow handling
+
 ## 2026-10-05 — Phase 1 Close-out
 
 - Replaced the ephemeral scratch PostgreSQL dependency with a persistent project-specific local PostgreSQL cluster at `~/.local/share/anilist/postgres` on port `55435`.
