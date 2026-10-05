@@ -27,9 +27,29 @@ Required values are documented in `docs/01-foundation/ENVIRONMENT.md`.
 
 ## Database setup
 
-Create an empty PostgreSQL database and set its connection string in `DATABASE_URL`. Phase 1 has no business schema or seed data.
+Phase 1 uses a persistent, project-specific PostgreSQL cluster owned by the local WSL user. It does not modify the existing system PostgreSQL clusters or the Windows PostgreSQL service.
 
-Validate and generate Prisma Client:
+- Data directory: `~/.local/share/anilist/postgres`
+- Port: `55435`
+- Database: `anime_platform`
+- User: `anilist`
+- Authentication: local development `trust` authentication bound to `127.0.0.1` only
+
+Start or recreate the local database when opening the project:
+
+```bash
+pnpm db:start
+```
+
+Then copy `.env.example` to `.env` if needed. The example already points Prisma to the persistent local database. `.env` is ignored by Git.
+
+To stop this project-specific cluster:
+
+```bash
+pnpm db:stop
+```
+
+The database has no business schema or seed data in Phase 1. Validate and generate Prisma Client:
 
 ```bash
 pnpm prisma:validate
