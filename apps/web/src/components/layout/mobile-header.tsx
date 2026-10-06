@@ -6,6 +6,7 @@ import {
   SearchIcon,
 } from "lucide-react"
 
+import { useAuth } from "@/components/auth/auth-provider"
 import { Button } from "@/components/ui/button"
 import {
   Tooltip,
@@ -16,6 +17,8 @@ import {
 import { PageContainer } from "./page-container"
 
 function MobileHeader() {
+  const { user } = useAuth()
+
   return (
     <header
       data-slot="mobile-header"
@@ -58,29 +61,31 @@ function MobileHeader() {
             </TooltipContent>
           </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Notifications"
-                  className="relative"
+          {user ? (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Notifications"
+                    className="relative"
+                  />
+                }
+              >
+                <BellIcon />
+
+                <span
+                  aria-hidden="true"
+                  className="absolute top-2 right-2 size-1.5 rounded-full bg-primary ring-2 ring-background"
                 />
-              }
-            >
-              <BellIcon />
+              </TooltipTrigger>
 
-              <span
-                aria-hidden="true"
-                className="absolute top-2 right-2 size-1.5 rounded-full bg-primary ring-2 ring-background"
-              />
-            </TooltipTrigger>
-
-            <TooltipContent>
-              Notifications
-            </TooltipContent>
-          </Tooltip>
+              <TooltipContent>
+                Notifications
+              </TooltipContent>
+            </Tooltip>
+          ) : null}
         </div>
       </PageContainer>
     </header>

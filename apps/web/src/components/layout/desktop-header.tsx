@@ -1,16 +1,27 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import {
+  usePathname,
+  useRouter,
+} from "next/navigation"
 import {
   BellIcon,
   ChevronDownIcon,
+  ListIcon,
+  LogOutIcon,
   SearchIcon,
   SettingsIcon,
   UserIcon,
 } from "lucide-react"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import {
+  useAuth,
+} from "@/components/auth/auth-provider"
+import {
+  Avatar,
+  AvatarFallback,
+} from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -20,6 +31,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
   TooltipContent,
@@ -46,6 +58,35 @@ const navigation = [
 
 function DesktopHeader() {
   const pathname = usePathname()
+  const router = useRouter()
+
+  const {
+    user,
+    status,
+    logout,
+  } = useAuth()
+
+  const accountName =
+    user?.displayName ??
+    user?.username ??
+    ""
+
+  const avatarFallback =
+    accountName
+      .slice(0, 1)
+      .toUpperCase() || "U"
+
+  async function handleLogout() {
+    try {
+      await logout()
+
+      router.replace("/")
+      router.refresh()
+    } catch {
+      // Keep current authenticated state
+      // if server-side revocation fails.
+    }
+  }
 
   return (
     <header
@@ -77,14 +118,18 @@ function DesktopHeader() {
           {navigation.map((item) => {
             const active =
               pathname === item.href ||
-              pathname.startsWith(`${item.href}/`)
+              pathname.startsWith(
+                `${item.href}/`,
+              )
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 aria-current={
-                  active ? "page" : undefined
+                  active
+                    ? "page"
+                    : undefined
                 }
                 className={cn(
                   "relative flex h-full items-center px-3 text-sm font-medium transition-colors outline-none",
@@ -129,80 +174,148 @@ function DesktopHeader() {
             </TooltipContent>
           </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Notifications"
-                  className="relative"
-                />
-              }
-            >
-              <BellIcon />
+          {user ? (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Notifications"
+                    className="relative"
+                  />
+                }
+              >
+                <BellIcon />
+              </TooltipTrigger>
 
-              <span
-                aria-hidden="true"
-                className="absolute top-2 right-2 size-1.5 rounded-full bg-primary ring-2 ring-background"
-              />
-            </TooltipTrigger>
-
-            <TooltipContent>
-              Notifications
-            </TooltipContent>
-          </Tooltip>
+              <TooltipContent>
+                Notifications
+              </TooltipContent>
+            </Tooltip>
+          ) : null}
 
           <div
             aria-hidden="true"
             className="mx-2 h-6 w-px bg-border"
           />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  className="h-10 gap-2 px-2"
-                  aria-label="Open profile menu"
-                />
-              }
+          {status === "loading" ? (
+            <div
+              aria-label="Loading account"
+              className="flex items-center gap-2 px-2"
             >
-              <Avatar size="sm">
-                <AvatarFallback>
-                  U
-                </AvatarFallback>
-              </Avatar>
+              <Skeleton className="size-8 rounded-full" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    className="h-10 gap-2 px-2"
+                    aria-label="Open profile menu"
+                  />
+                }
+              >
+                <Avatar size="sm">
+                  <AvatarFallback>
+                    {avatarFallback}
+                  </AvatarFallback>
+                </Avatar>
 
-              <span className="max-w-28 truncate text-sm">
-                User
-              </span>
+                <span className="max-w-28 truncate text-sm">
+                  {accountName}
+                </span>
 
-              <ChevronDownIcon className="size-3.5 text-muted-foreground" />
-            </DropdownMenuTrigger>
+                <ChevronDownIcon className="size-3.5 text-muted-foreground" />
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              align="end"
-              sideOffset={8}
-              className="min-w-52"
-            >
-              <DropdownMenuLabel>
-                My account
-              </DropdownMenuLabel>
+              <DropdownMenuContent
+                align="end"
+                sideOffset={8}
+                className="min-w-52"
+              >
+                <DropdownMenuLabel>
+                  <div className="min-w-0">
+                    <p className="truncate">
+                      {accountName}
+                    </p>
 
-              <DropdownMenuSeparator />
+                    <p className="truncate text-xs font-normal text-muted-foreground">
+                      @{user.username}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
 
-              <DropdownMenuItem>
-                <UserIcon />
-                Profile
-              </DropdownMenuItem>
+                <DropdownMenuSeparator />
 
-              <DropdownMenuItem>
-                <SettingsIcon />
-                Settings
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem
+                  render={
+                    <Link
+                      href={`/user/${user.username}`}
+                    />
+                  }
+                >
+                  <UserIcon />
+                  Profile
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  render={
+                    <Link
+                      href={`/user/${user.username}/anime-list`}
+                    />
+                  }
+                >
+                  <ListIcon />
+                  Anime List
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  render={
+                    <Link
+                      href="/settings"
+                    />
+                  }
+                >
+                  <SettingsIcon />
+                  Settings
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={() => {
+                    void handleLogout()
+                  }}
+                >
+                  <LogOutIcon />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                render={
+                  <Link href="/login" />
+                }
+              >
+                Sign in
+              </Button>
+
+              <Button
+                render={
+                  <Link href="/register" />
+                }
+              >
+                Create account
+              </Button>
+            </div>
+          )}
         </div>
       </PageContainer>
     </header>

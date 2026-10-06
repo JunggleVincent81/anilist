@@ -9,8 +9,8 @@
     "start": "node dist/main.js",
     "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
-    "test:watch": "jest --watch",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
+    "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev"
@@ -25,6 +25,7 @@
     "@nestjs/platform-express": "12.1.2",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
+    "argon2": "^0.45.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.2",
     "dotenv": "17.2.3",
@@ -47,7 +48,7 @@
     "jest": "30.2.0",
     "prisma": "7.10.0",
     "ts-jest": "29.4.5",
-    "typescript-eslint": "8.51.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.51.0"
   }
 }

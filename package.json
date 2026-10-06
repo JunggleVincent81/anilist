@@ -12,8 +12,8 @@
     "lint": "pnpm -r --workspace-concurrency=1 --if-present lint",
     "typecheck": "pnpm -r --workspace-concurrency=1 --if-present typecheck",
     "test": "pnpm -r --workspace-concurrency=1 --if-present test",
-    "db:start": "./scripts/postgres-start.sh",
-    "db:stop": "./scripts/postgres-stop.sh",
+    "db:start": "wsl.exe bash -lc \"cd /mnt/c/Dev/Projects/anilist && ./scripts/postgres-start.sh\"",
+    "db:stop": "wsl.exe bash -lc \"cd /mnt/c/Dev/Projects/anilist && ./scripts/postgres-stop.sh\"",
     "prisma:generate": "pnpm --filter @anime-platform/api prisma:generate",
     "prisma:validate": "pnpm --filter @anime-platform/api prisma:validate"
   }

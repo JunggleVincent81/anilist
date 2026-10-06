@@ -27,17 +27,38 @@ function port(name: string, fallback: number): number {
   return parsed;
 }
 
-export function loadEnvironment(): AppEnvironment {
-  const nodeEnv = (process.env.NODE_ENV ?? 'development') as AppEnvironment['nodeEnv'];
-  if (!['development', 'test', 'production'].includes(nodeEnv)) {
-    throw new Error('NODE_ENV must be development, test, or production');
+export function loadEnvironment():
+  AppEnvironment {
+  const nodeEnv =
+    required(
+      'NODE_ENV',
+    ) as AppEnvironment['nodeEnv'];
+
+  if (
+    ![
+      'development',
+      'test',
+      'production',
+    ].includes(nodeEnv)
+  ) {
+    throw new Error(
+      'NODE_ENV must be development, test, or production',
+    );
   }
 
   return {
     nodeEnv,
-    apiPort: port('API_PORT', 4000),
-    webUrl: process.env.WEB_URL ?? 'http://localhost:3000',
-    databaseUrl: required('DATABASE_URL')
+    apiPort:
+      port('API_PORT', 4000),
+
+    webUrl:
+      process.env.WEB_URL ??
+      'http://localhost:3000',
+
+    databaseUrl:
+      required(
+        'DATABASE_URL',
+      ),
   };
 }
 
