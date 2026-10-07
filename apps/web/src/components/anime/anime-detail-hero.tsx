@@ -1,3 +1,4 @@
+import { AnimeTrackingControl } from "@/components/anime/anime-tracking-control"
 import type {
   AnimeDetail,
 } from "@/lib/graphql/anime"
@@ -204,6 +205,13 @@ export function AnimeDetailHero({
                 18+
               </span>
             ) : null}
+          </div>
+
+          <div className="mx-auto w-full max-w-sm md:mx-0">
+            <AnimeTrackingControl
+              animeId={anime.id}
+              episodes={anime.episodes}
+            />
           </div>
         </div>
       </div>

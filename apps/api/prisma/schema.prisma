@@ -98,6 +98,15 @@ enum AnimeCatalogDecisionSource {
   MANUAL
 }
 
+enum AnimeListStatus {
+  PLANNING
+  WATCHING
+  COMPLETED
+  PAUSED
+  DROPPED
+  REWATCHING
+}
+
 model User {
   id           String @id @default(uuid()) @db.Uuid
   email        String @unique @db.VarChar(320)
@@ -110,7 +119,8 @@ model User {
 
   role UserRole @default(USER)
 
-  sessions Session[]
+  sessions         Session[]
+  animeListEntries AnimeListEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -184,6 +194,8 @@ model Anime {
 
   relationsFrom AnimeRelation[] @relation("AnimeRelationSource")
   relationsTo   AnimeRelation[] @relation("AnimeRelationTarget")
+
+  animeListEntries AnimeListEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -344,4 +356,32 @@ model AnimeRelation {
   @@index([sourceAnimeId, type])
   @@index([targetAnimeId, type])
   @@index([type])
+}
+
+model AnimeListEntry {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId  String @db.Uuid
+  animeId String @db.Uuid
+
+  status AnimeListStatus @default(PLANNING)
+
+  progressEpisodes Int @default(0)
+
+  score Decimal? @db.Decimal(3, 1)
+
+  rewatchCount Int @default(0)
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, animeId])
+  @@index([animeId])
+  @@index([userId, status, updatedAt])
 }
