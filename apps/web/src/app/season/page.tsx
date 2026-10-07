@@ -242,6 +242,36 @@ export default async function SeasonPage({
             description="Browse anime from a specific broadcast season."
           />
 
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/discover?season=${season}&year=${year}`}
+              className={
+                buttonVariants({
+                  variant:
+                    "outline",
+                  size:
+                    "sm",
+                })
+              }
+            >
+              Advanced filters
+            </Link>
+
+            <Link
+              href="/schedule"
+              className={
+                buttonVariants({
+                  variant:
+                    "outline",
+                  size:
+                    "sm",
+                })
+              }
+            >
+              Airing schedule
+            </Link>
+          </div>
+
           <div
             className={cn(
               "flex flex-col gap-4",

@@ -6,6 +6,7 @@ import {
 } from '@jest/globals';
 
 import {
+  AnimeCatalogStatus,
   AnimeFormat,
   AnimeReleaseStatus,
   AnimeSeason,
@@ -119,7 +120,7 @@ describe(
   'AnimeDiscoveryService',
   () => {
     it(
-      'uses default pagination',
+      'uses default pagination and only included catalog anime',
       async () => {
         const {
           prisma,
@@ -142,14 +143,30 @@ describe(
         expect(
           count,
         ).toHaveBeenCalledWith({
-          where: {},
+          where: {
+              AND: [
+                {
+                  catalogStatus:
+                    AnimeCatalogStatus
+                      .INCLUDED,
+                },
+              ],
+            },
         });
 
         expect(
           findMany,
         ).toHaveBeenCalledWith(
           expect.objectContaining({
-            where: {},
+            where: {
+              AND: [
+                {
+                  catalogStatus:
+                    AnimeCatalogStatus
+                      .INCLUDED,
+                },
+              ],
+            },
 
             skip: 0,
             take: 20,
@@ -249,6 +266,12 @@ describe(
         ).toHaveBeenCalledWith({
           where: {
             AND: [
+              {
+                catalogStatus:
+                  AnimeCatalogStatus
+                    .INCLUDED,
+              },
+
               {
                 OR: [
                   {
@@ -370,6 +393,12 @@ describe(
             where: {
               AND: [
                 {
+                  catalogStatus:
+                    AnimeCatalogStatus
+                      .INCLUDED,
+                },
+
+                {
                   format: {
                     in: [
                       AnimeFormat.TV,
@@ -483,6 +512,12 @@ describe(
         ).toHaveBeenCalledWith({
           where: {
             AND: [
+              {
+                catalogStatus:
+                  AnimeCatalogStatus
+                    .INCLUDED,
+              },
+
               {
                 tags: {
                   some: {

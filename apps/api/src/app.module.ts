@@ -3,6 +3,10 @@ import {
 } from '@nestjs/common';
 
 import {
+  AiringScheduleModule,
+} from './airing-schedule/airing-schedule.module.js';
+
+import {
   AnimeFavoritesModule,
 } from './anime-favorites/anime-favorites.module.js';
 
@@ -45,6 +49,7 @@ import {
     AuthModule,
     UsersModule,
     AnimeModule,
+    AiringScheduleModule,
     AnimeTrackingModule,
     AnimeFavoritesModule,
     UserStatisticsModule,

@@ -48,8 +48,8 @@ function MobileHeader() {
           <Tooltip>
             <TooltipTrigger
               render={
-                <button
-                  type="button"
+                <Link
+                  href="/discover"
                   aria-label="Search"
                   className={buttonVariants({
                     variant: "ghost",

@@ -2,6 +2,10 @@ import {
   Injectable,
 } from '@nestjs/common';
 
+import {
+  AnimeCatalogStatus,
+} from '@prisma/client';
+
 import type {
   Prisma,
 } from '@prisma/client';
@@ -132,13 +136,21 @@ export class AnimeDiscoveryService {
     input?:
       AnimeDiscoveryInput,
   ): Prisma.AnimeWhereInput {
-    if (!input) {
-      return {};
-    }
-
     const filters:
       Prisma.AnimeWhereInput[] =
-      [];
+      [
+        {
+          catalogStatus:
+            AnimeCatalogStatus
+              .INCLUDED,
+        },
+      ];
+
+    if (!input) {
+      return {
+        AND: filters,
+      };
+    }
 
     const search =
       input.search
