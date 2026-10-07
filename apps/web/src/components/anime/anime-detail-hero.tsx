@@ -1,3 +1,4 @@
+import { AnimeFavoriteToggle } from "@/components/anime/anime-favorite-toggle"
 import { AnimeTrackingControl } from "@/components/anime/anime-tracking-control"
 import type {
   AnimeDetail,
@@ -207,10 +208,14 @@ export function AnimeDetailHero({
             ) : null}
           </div>
 
-          <div className="mx-auto w-full max-w-sm md:mx-0">
+          <div className="mx-auto w-full max-w-sm space-y-2 md:mx-0">
             <AnimeTrackingControl
               animeId={anime.id}
               episodes={anime.episodes}
+            />
+
+            <AnimeFavoriteToggle
+              animeId={anime.id}
             />
           </div>
         </div>

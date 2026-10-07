@@ -11,7 +11,7 @@
 | 4 | Anime Database & Discovery | COMPLETE |
 | 5 | Anime Detail | NEXT |
 | 6 | Tracking MVP | PLANNED |
-| 7 | Profile, Favorites & Statistics | PLANNED |
+| 7 | Profile, Favorites & Statistics | COMPLETE |
 | 8 | Seasonal, Airing & Discovery+ | PLANNED |
 | 9 | Achievements & Gratification | PLANNED |
 | 10 | Social, Community & Production | PLANNED |

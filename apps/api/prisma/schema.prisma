@@ -121,6 +121,7 @@ model User {
 
   sessions         Session[]
   animeListEntries AnimeListEntry[]
+  animeFavorites   AnimeFavorite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -196,6 +197,7 @@ model Anime {
   relationsTo   AnimeRelation[] @relation("AnimeRelationTarget")
 
   animeListEntries AnimeListEntry[]
+  favoriteEntries  AnimeFavorite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -384,4 +386,21 @@ model AnimeListEntry {
   @@unique([userId, animeId])
   @@index([animeId])
   @@index([userId, status, updatedAt])
+}
+
+
+model AnimeFavorite {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId  String @db.Uuid
+  animeId String @db.Uuid
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, animeId])
+  @@index([animeId])
+  @@index([userId, createdAt])
 }

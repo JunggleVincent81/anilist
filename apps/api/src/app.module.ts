@@ -3,6 +3,10 @@ import {
 } from '@nestjs/common';
 
 import {
+  AnimeFavoritesModule,
+} from './anime-favorites/anime-favorites.module.js';
+
+import {
   AnimeTrackingModule,
 } from './anime-tracking/anime-tracking.module.js';
 
@@ -27,6 +31,10 @@ import {
 } from './health/health.module.js';
 
 import {
+  UserStatisticsModule,
+} from './user-statistics/user-statistics.module.js';
+
+import {
   UsersModule,
 } from './users/users.module.js';
 
@@ -38,6 +46,8 @@ import {
     UsersModule,
     AnimeModule,
     AnimeTrackingModule,
+    AnimeFavoritesModule,
+    UserStatisticsModule,
 
     GraphqlModule,
     HealthModule,
