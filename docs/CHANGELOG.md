@@ -1,5 +1,41 @@
 # Documentation Changelog
 
+## 2026-10-07 — Phase 5 Anime Detail
+
+### Added
+
+- real `/anime/[slug]` detail experience
+- complete frontend anime detail GraphQL contract
+- responsive anime hero and artwork fallbacks
+- synopsis, taxonomy and studio presentation
+- alternative titles and release metadata
+- validated external provider references
+- related anime navigation
+- anime-specific loading, error and not-found states
+- dynamic anime SEO and social metadata
+- Phase 5 validation and completion documentation
+
+### Hardened
+
+- sparse bootstrap metadata is treated as a valid UI state
+- obvious mojibake alternative titles are hidden at presentation time
+- external links require stored valid HTTP/HTTPS URLs
+- unknown relation semantics remain neutral instead of being inferred
+- high relation counts are capped in the initial detail presentation
+
+### Validated
+
+- 15 API test suites passing
+- 69 API tests passing
+- workspace typecheck passing
+- workspace lint passing
+- API production build passing
+- web production build passing
+- anime detail runtime lookup passing
+- not-found semantics passing
+- discovery regression passing
+- seasonal regression passing
+
 ## 2026-10-07 — Phase 4 Anime Database & Discovery
 
 ### Added
