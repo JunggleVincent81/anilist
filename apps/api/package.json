@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
     "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
+    "anime:import": "pnpm build && node dist/anime-import/anime-import.cli.js",
+    "anime:catalog-classify": "pnpm build && node dist/anime-catalog/anime-catalog.cli.js",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev"

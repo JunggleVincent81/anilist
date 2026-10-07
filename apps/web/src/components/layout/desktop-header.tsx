@@ -22,7 +22,9 @@ import {
   Avatar,
   AvatarFallback,
 } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import {
+  buttonVariants,
+} from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -159,10 +161,13 @@ function DesktopHeader() {
           <Tooltip>
             <TooltipTrigger
               render={
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <button
+                  type="button"
                   aria-label="Search"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "icon",
+                  })}
                 />
               }
             >
@@ -178,15 +183,23 @@ function DesktopHeader() {
             <Tooltip>
               <TooltipTrigger
                 render={
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <button
+                    type="button"
                     aria-label="Notifications"
-                    className="relative"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "icon",
+                      className: "relative",
+                    })}
                   />
                 }
               >
                 <BellIcon />
+
+                <span
+                  aria-hidden="true"
+                  className="absolute top-2 right-2 size-1.5 rounded-full bg-primary ring-2 ring-background"
+                />
               </TooltipTrigger>
 
               <TooltipContent>
@@ -212,10 +225,14 @@ function DesktopHeader() {
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Button
-                    variant="ghost"
-                    className="h-10 gap-2 px-2"
+                  <button
+                    type="button"
                     aria-label="Open profile menu"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      className:
+                        "h-10 gap-2 px-2",
+                    })}
                   />
                 }
               >
@@ -298,22 +315,21 @@ function DesktopHeader() {
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                render={
-                  <Link href="/login" />
-                }
+              <Link
+                href="/login"
+                className={buttonVariants({
+                  variant: "ghost",
+                })}
               >
                 Sign in
-              </Button>
+              </Link>
 
-              <Button
-                render={
-                  <Link href="/register" />
-                }
+              <Link
+                href="/register"
+                className={buttonVariants()}
               >
                 Create account
-              </Button>
+              </Link>
             </div>
           )}
         </div>

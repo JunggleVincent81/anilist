@@ -5,11 +5,11 @@
 | Phase | Fokus | Status |
 |---|---|---|
 | 0 | Product & UX Definition | COMPLETE |
-| 1 | Project Foundation | NEXT |
-| 2 | UI Foundation | PLANNED |
-| 3 | Accounts & Users | PLANNED |
-| 4 | Anime Database & Discovery | PLANNED |
-| 5 | Anime Detail | PLANNED |
+| 1 | Project Foundation | COMPLETE |
+| 2 | UI Foundation | COMPLETE |
+| 3 | Accounts & Users | COMPLETE |
+| 4 | Anime Database & Discovery | COMPLETE |
+| 5 | Anime Detail | NEXT |
 | 6 | Tracking MVP | PLANNED |
 | 7 | Profile, Favorites & Statistics | PLANNED |
 | 8 | Seasonal, Airing & Discovery+ | PLANNED |

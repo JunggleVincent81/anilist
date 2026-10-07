@@ -1,0 +1,26 @@
+import {
+  Module,
+} from '@nestjs/common';
+
+import {
+  DatabaseModule,
+} from '../database/database.module.js';
+
+import {
+  AnimeImportService,
+} from './anime-import.service.js';
+
+@Module({
+  imports: [
+    DatabaseModule,
+  ],
+
+  providers: [
+    AnimeImportService,
+  ],
+
+  exports: [
+    AnimeImportService,
+  ],
+})
+export class AnimeImportModule {}

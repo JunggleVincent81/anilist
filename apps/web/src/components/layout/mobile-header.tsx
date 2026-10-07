@@ -7,7 +7,9 @@ import {
 } from "lucide-react"
 
 import { useAuth } from "@/components/auth/auth-provider"
-import { Button } from "@/components/ui/button"
+import {
+  buttonVariants,
+} from "@/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
@@ -46,10 +48,13 @@ function MobileHeader() {
           <Tooltip>
             <TooltipTrigger
               render={
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <button
+                  type="button"
                   aria-label="Search"
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "icon",
+                  })}
                 />
               }
             >
@@ -65,11 +70,14 @@ function MobileHeader() {
             <Tooltip>
               <TooltipTrigger
                 render={
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <button
+                    type="button"
                     aria-label="Notifications"
-                    className="relative"
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "icon",
+                      className: "relative",
+                    })}
                   />
                 }
               >

@@ -12,6 +12,92 @@ enum UserRole {
   ADMIN
 }
 
+enum AnimeFormat {
+  TV
+  MOVIE
+  OVA
+  ONA
+  SPECIAL
+  MUSIC
+  UNKNOWN
+}
+
+enum AnimeReleaseStatus {
+  UPCOMING
+  AIRING
+  FINISHED
+  HIATUS
+  CANCELLED
+  UNKNOWN
+}
+
+enum AnimeSeason {
+  WINTER
+  SPRING
+  SUMMER
+  FALL
+}
+
+enum AnimeSourceMaterial {
+  ORIGINAL
+  MANGA
+  LIGHT_NOVEL
+  NOVEL
+  WEB_NOVEL
+  VISUAL_NOVEL
+  GAME
+  MULTIMEDIA_PROJECT
+  OTHER
+  UNKNOWN
+}
+
+enum AnimeTitleType {
+  ROMAJI
+  ENGLISH
+  NATIVE
+  SYNONYM
+}
+
+enum AnimeDataProvider {
+  MAL
+  ANILIST
+  ANIDB
+  KITSU
+  ANIME_PLANET
+  LIVECHART
+  ANN
+  TMDB
+  IMDB
+  OTHER
+}
+
+enum AnimeStudioRole {
+  ANIMATION
+  PRODUCER
+}
+
+enum AnimeRelationType {
+  SEQUEL
+  SIDE_STORY
+  SPIN_OFF
+  ALTERNATIVE
+  SUMMARY
+  COMPILATION
+  CONTAINS
+  OTHER
+}
+
+enum AnimeCatalogStatus {
+  INCLUDED
+  REVIEW
+  EXCLUDED
+}
+
+enum AnimeCatalogDecisionSource {
+  AUTO
+  MANUAL
+}
+
 model User {
   id           String @id @default(uuid()) @db.Uuid
   email        String @unique @db.VarChar(320)
@@ -46,4 +132,216 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model Anime {
+  id String @id @default(uuid()) @db.Uuid
+
+  slug String @unique @db.VarChar(220)
+
+  title String @db.VarChar(500)
+
+  titleRomaji  String? @db.VarChar(500)
+  titleEnglish String? @db.VarChar(500)
+  titleNative  String? @db.VarChar(500)
+
+  description String? @db.Text
+
+  format AnimeFormat @default(UNKNOWN)
+
+  status AnimeReleaseStatus @default(UNKNOWN)
+
+  sourceMaterial AnimeSourceMaterial @default(UNKNOWN)
+
+  episodes        Int?
+  durationMinutes Int?
+
+  season     AnimeSeason?
+  seasonYear Int?
+
+  startDate DateTime? @db.Date
+  endDate   DateTime? @db.Date
+
+  coverImageUrl  String? @db.Text
+  bannerImageUrl String? @db.Text
+
+  isAdult Boolean?
+
+  catalogStatus AnimeCatalogStatus @default(REVIEW)
+
+  catalogDecisionSource AnimeCatalogDecisionSource @default(AUTO)
+
+  catalogReason String? @db.VarChar(191)
+
+  catalogRuleVersion Int @default(1)
+
+  titles      AnimeTitle[]
+  externalIds ExternalAnimeId[]
+
+  genres  AnimeGenre[]
+  tags    AnimeTag[]
+  studios AnimeStudio[]
+
+  relationsFrom AnimeRelation[] @relation("AnimeRelationSource")
+  relationsTo   AnimeRelation[] @relation("AnimeRelationTarget")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([title])
+  @@index([status])
+  @@index([format])
+  @@index([seasonYear, season])
+  @@index([startDate])
+  @@index([catalogStatus])
+}
+
+model AnimeTitle {
+  id String @id @default(uuid()) @db.Uuid
+
+  animeId String @db.Uuid
+  anime   Anime  @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  type AnimeTitleType
+
+  value String @db.VarChar(500)
+
+  languageCode String? @db.VarChar(16)
+
+  createdAt DateTime @default(now())
+
+  @@unique([animeId, type, value])
+  @@index([animeId])
+  @@index([animeId, type])
+}
+
+model ExternalAnimeId {
+  id String @id @default(uuid()) @db.Uuid
+
+  animeId String @db.Uuid
+  anime   Anime  @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  provider AnimeDataProvider
+
+  externalId String @db.VarChar(191)
+
+  sourceUrl String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, externalId])
+  @@index([animeId])
+  @@index([animeId, provider])
+}
+
+model Genre {
+  id String @id @default(uuid()) @db.Uuid
+
+  slug String @unique @db.VarChar(80)
+  name String @db.VarChar(80)
+
+  description String? @db.Text
+
+  animeLinks AnimeGenre[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+model AnimeGenre {
+  animeId String @db.Uuid
+  genreId String @db.Uuid
+
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([animeId, genreId])
+  @@index([genreId])
+}
+
+model Tag {
+  id String @id @default(uuid()) @db.Uuid
+
+  slug String @unique @db.VarChar(120)
+  name String @db.VarChar(120)
+
+  description String? @db.Text
+
+  animeLinks AnimeTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+model AnimeTag {
+  animeId String @db.Uuid
+  tagId   String @db.Uuid
+
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([animeId, tagId])
+  @@index([tagId])
+}
+
+model Studio {
+  id String @id @default(uuid()) @db.Uuid
+
+  slug String @unique @db.VarChar(160)
+  name String @db.VarChar(255)
+
+  animeLinks AnimeStudio[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+model AnimeStudio {
+  animeId  String @db.Uuid
+  studioId String @db.Uuid
+
+  role   AnimeStudioRole @default(ANIMATION)
+  isMain Boolean         @default(false)
+
+  anime  Anime  @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  studio Studio @relation(fields: [studioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([animeId, studioId, role])
+  @@index([studioId])
+  @@index([animeId, role])
+}
+
+model AnimeRelation {
+  id String @id @default(uuid()) @db.Uuid
+
+  sourceAnimeId String @db.Uuid
+  targetAnimeId String @db.Uuid
+
+  sourceAnime Anime @relation("AnimeRelationSource", fields: [sourceAnimeId], references: [id], onDelete: Cascade)
+  targetAnime Anime @relation("AnimeRelationTarget", fields: [targetAnimeId], references: [id], onDelete: Cascade)
+
+  type AnimeRelationType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceAnimeId, targetAnimeId, type])
+  @@index([sourceAnimeId])
+  @@index([targetAnimeId])
+  @@index([sourceAnimeId, type])
+  @@index([targetAnimeId, type])
+  @@index([type])
 }

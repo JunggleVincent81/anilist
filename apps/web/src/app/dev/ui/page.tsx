@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/badge"
 import {
   Button,
+  buttonVariants,
 } from "@/components/ui/button"
 import {
   Checkbox,
@@ -609,7 +610,12 @@ export default function UiShowcasePage() {
             <Dialog>
               <DialogTrigger
                 render={
-                  <Button variant="outline" />
+                  <button
+                    type="button"
+                    className={buttonVariants({
+                      variant: "outline",
+                    })}
+                  />
                 }
               >
                 Open dialog
@@ -666,7 +672,12 @@ export default function UiShowcasePage() {
             <Sheet>
               <SheetTrigger
                 render={
-                  <Button variant="outline" />
+                  <button
+                    type="button"
+                    className={buttonVariants({
+                      variant: "outline",
+                    })}
+                  />
                 }
               >
                 Open sheet
@@ -721,7 +732,12 @@ export default function UiShowcasePage() {
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Button variant="outline" />
+                  <button
+                    type="button"
+                    className={buttonVariants({
+                      variant: "outline",
+                    })}
+                  />
                 }
               >
                 Account menu
@@ -749,9 +765,12 @@ export default function UiShowcasePage() {
             <Tooltip>
               <TooltipTrigger
                 render={
-                  <Button
-                    variant="outline"
-                    size="icon"
+                  <button
+                    type="button"
+                    className={buttonVariants({
+                      variant: "outline",
+                      size: "icon",
+                    })}
                     aria-label="Notifications"
                   />
                 }
@@ -868,48 +887,66 @@ export default function UiShowcasePage() {
           />
 
           <ResponsiveGrid>
+            <div className="space-y-3">
+              <AnimeCard
+                anime={{
+                  id: "dev-frieren",
+                  slug: "frieren-beyond-journeys-end",
+                  title: "Frieren: Beyond Journey's End",
+                  format: "TV",
+                  status: "FINISHED",
+                  episodes: 28,
+                  season: "FALL",
+                  seasonYear: 2023,
+                  coverImageUrl: null,
+                }}
+              />
+
+              <Button size="sm">
+                Add to list
+              </Button>
+            </div>
+
             <AnimeCard
-              slug="frieren-beyond-journeys-end"
-              title="Frieren: Beyond Journey's End"
-              format="TV"
-              episodes={28}
-              year={2023}
-              score={9.1}
-              action={
-                <Button
-                  variant="secondary"
-                  size="icon-sm"
-                  aria-label="Anime actions"
-                >
-                  <MoreHorizontalIcon />
-                </Button>
-              }
+              anime={{
+                id: "dev-vinland-saga-season-2",
+                slug: "vinland-saga-season-2",
+                title: "Vinland Saga Season 2",
+                format: "TV",
+                status: "FINISHED",
+                episodes: 24,
+                season: "WINTER",
+                seasonYear: 2023,
+                coverImageUrl: null,
+              }}
             />
 
             <AnimeCard
-              slug="vinland-saga-season-2"
-              title="Vinland Saga Season 2"
-              format="TV"
-              episodes={24}
-              year={2023}
-              score={8.8}
+              anime={{
+                id: "dev-mushoku-tensei",
+                slug: "mushoku-tensei",
+                title: "Mushoku Tensei",
+                format: "TV",
+                status: "FINISHED",
+                episodes: 11,
+                season: "WINTER",
+                seasonYear: 2021,
+                coverImageUrl: null,
+              }}
             />
 
             <AnimeCard
-              slug="mushoku-tensei"
-              title="Mushoku Tensei: Jobless Reincarnation"
-              format="TV"
-              episodes={23}
-              year={2021}
-              score={8.4}
-            />
-
-            <AnimeCard
-              slug="one-piece"
-              title="One Piece"
-              format="TV"
-              year={1999}
-              score={8.7}
+              anime={{
+                id: "dev-one-piece",
+                slug: "one-piece",
+                title: "One Piece",
+                format: "TV",
+                status: "AIRING",
+                episodes: null,
+                season: "FALL",
+                seasonYear: 1999,
+                coverImageUrl: null,
+              }}
             />
           </ResponsiveGrid>
         </ContentSection>

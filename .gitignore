@@ -12,3 +12,7 @@ coverage/
 apps/api/src/generated/prisma/
 apps/api/src/graphql/schema.gql
 .DS_Store
+
+# Local anime import data
+/data/import/*.jsonl
+/data/import/db-source-anime-map.txt
