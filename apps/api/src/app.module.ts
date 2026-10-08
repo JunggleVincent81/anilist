@@ -43,6 +43,10 @@ import {
 } from './user-statistics/user-statistics.module.js';
 
 import {
+  UserFollowsModule,
+} from './user-follows/user-follows.module.js';
+
+import {
   UsersModule,
 } from './users/users.module.js';
 
@@ -52,6 +56,7 @@ import {
 
     AuthModule,
     UsersModule,
+    UserFollowsModule,
     AnimeModule,
     AiringScheduleModule,
     AnimeTrackingModule,
