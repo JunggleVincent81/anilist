@@ -127,6 +127,20 @@ enum AchievementMetric {
   GENRE_ANIME
 }
 
+enum ActivityType {
+  TEXT
+  ANIME_STATUS
+  ANIME_PROGRESS
+  ACHIEVEMENT_UNLOCKED
+  REVIEW_PUBLISHED
+}
+
+enum ActivityVisibility {
+  PUBLIC
+  FOLLOWERS
+  PRIVATE
+}
+
 model User {
   id           String @id @default(uuid()) @db.Uuid
   email        String @unique @db.VarChar(320)
@@ -149,7 +163,9 @@ model User {
   equippedTitleAchievement   Achievement? @relation("EquippedAchievementTitle", fields: [equippedTitleAchievementId], references: [id], onDelete: SetNull)
   following                  UserFollow[] @relation("UserFollowing")
 
-  followers UserFollow[] @relation("UserFollowers")
+  followers      UserFollow[]        @relation("UserFollowers")
+  socialSettings UserSocialSettings?
+  activities     Activity[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -228,6 +244,7 @@ model Anime {
 
   animeListEntries AnimeListEntry[]
   favoriteEntries  AnimeFavorite[]
+  activities       Activity[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -458,7 +475,8 @@ model Achievement {
 
   unlocks UserAchievement[]
 
-  equippedByUsers User[] @relation("EquippedAchievementTitle")
+  equippedByUsers User[]     @relation("EquippedAchievementTitle")
+  activities      Activity[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -502,4 +520,46 @@ model UserFollow {
   @@unique([followerId, followingId])
   @@index([followerId, createdAt])
   @@index([followingId, createdAt])
+}
+
+model UserSocialSettings {
+  userId String @id @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  autoActivityEnabled Boolean @default(false)
+
+  activityVisibility ActivityVisibility @default(PUBLIC)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Activity {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type ActivityType
+
+  text String? @db.VarChar(500)
+
+  animeId String? @db.Uuid
+  anime   Anime?  @relation(fields: [animeId], references: [id], onDelete: SetNull)
+
+  animeStatus AnimeListStatus?
+
+  progressEpisodes Int?
+
+  achievementId String?      @db.Uuid
+  achievement   Achievement? @relation(fields: [achievementId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+  @@index([type, createdAt])
+  @@index([animeId, createdAt])
+  @@index([achievementId, createdAt])
 }

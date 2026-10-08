@@ -11,6 +11,10 @@ import {
 } from './achievements/achievements.module.js';
 
 import {
+  ActivitiesModule,
+} from './activities/activities.module.js';
+
+import {
   AnimeFavoritesModule,
 } from './anime-favorites/anime-favorites.module.js';
 
@@ -57,6 +61,7 @@ import {
     AuthModule,
     UsersModule,
     UserFollowsModule,
+    ActivitiesModule,
     AnimeModule,
     AiringScheduleModule,
     AnimeTrackingModule,
