@@ -13,6 +13,10 @@ import {
 } from '../achievements/achievement-reconciliation.service.js';
 
 import {
+  ActivityEventService,
+} from '../activities/activity-event.service.js';
+
+import {
   PrismaService,
 } from '../database/prisma.service.js';
 
@@ -84,6 +88,9 @@ export class AnimeTrackingService {
 
     private readonly achievementReconciliation?:
       AchievementReconciliationService,
+
+    private readonly activityEvents?:
+      ActivityEventService,
   ) {}
 
   async findMine(
@@ -495,6 +502,44 @@ export class AnimeTrackingService {
       ?.reconcileUser(
         userId,
       );
+
+    const trackingActivityChanged =
+      existing?.status !==
+        nextStatus ||
+      (
+        existing
+          ?.progressEpisodes ??
+        null
+      ) !==
+        progressEpisodes;
+
+    if (
+      trackingActivityChanged
+    ) {
+      await this
+        .activityEvents
+        ?.recordTrackingUpdateBestEffort({
+          userId,
+
+          animeId:
+            anime.id,
+
+          previousStatus:
+            existing
+              ?.status ??
+            null,
+
+          nextStatus,
+
+          previousProgressEpisodes:
+            existing
+              ?.progressEpisodes ??
+            null,
+
+          nextProgressEpisodes:
+            progressEpisodes,
+        });
+    }
 
     return this.mapEntry(
       entry,

@@ -11,6 +11,18 @@ import {
 } from '../database/database.module.js';
 
 import {
+  ActivitiesResolver,
+} from './activities.resolver.js';
+
+import {
+  ActivitiesService,
+} from './activities.service.js';
+
+import {
+  ActivityEventService,
+} from './activity-event.service.js';
+
+import {
   ActivitySettingsResolver,
 } from './activity-settings.resolver.js';
 
@@ -24,12 +36,19 @@ import {
   ],
 
   providers: [
+    ActivitiesResolver,
+    ActivitiesService,
+    ActivityEventService,
+
     ActivitySettingsResolver,
     ActivitySettingsService,
+
     RequireAuthGuard,
   ],
 
   exports: [
+    ActivitiesService,
+    ActivityEventService,
     ActivitySettingsService,
   ],
 })
