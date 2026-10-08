@@ -147,8 +147,12 @@ model User {
 
   equippedTitleAchievementId String?      @db.Uuid
   equippedTitleAchievement   Achievement? @relation("EquippedAchievementTitle", fields: [equippedTitleAchievementId], references: [id], onDelete: SetNull)
-  createdAt                  DateTime     @default(now())
-  updatedAt                  DateTime     @updatedAt
+  following                  UserFollow[] @relation("UserFollowing")
+
+  followers UserFollow[] @relation("UserFollowers")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([equippedTitleAchievementId])
 }
@@ -482,4 +486,20 @@ model UserAchievement {
   @@unique([userId, showcasePosition])
   @@index([achievementId])
   @@index([userId, unlockedAt])
+}
+
+model UserFollow {
+  id String @id @default(uuid()) @db.Uuid
+
+  followerId  String @db.Uuid
+  followingId String @db.Uuid
+
+  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId, createdAt])
+  @@index([followingId, createdAt])
 }

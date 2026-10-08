@@ -1,0 +1,30 @@
+-- CreateTable
+CREATE TABLE "UserFollow" (
+    "id" UUID NOT NULL,
+    "followerId" UUID NOT NULL,
+    "followingId" UUID NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "UserFollow_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE INDEX "UserFollow_followerId_createdAt_idx" ON "UserFollow"("followerId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "UserFollow_followingId_createdAt_idx" ON "UserFollow"("followingId", "createdAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserFollow_followerId_followingId_key" ON "UserFollow"("followerId", "followingId");
+
+-- AddForeignKey
+ALTER TABLE "UserFollow" ADD CONSTRAINT "UserFollow_followerId_fkey" FOREIGN KEY ("followerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserFollow" ADD CONSTRAINT "UserFollow_followingId_fkey" FOREIGN KEY ("followingId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Prevent users from following themselves.
+ALTER TABLE "UserFollow"
+ADD CONSTRAINT "UserFollow_no_self_follow"
+CHECK ("followerId" <> "followingId");
+
