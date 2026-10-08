@@ -41,6 +41,13 @@ const activitySelect = {
 
   createdAt: true,
 
+  _count: {
+    select: {
+      likes: true,
+      replies: true,
+    },
+  },
+
   user: {
     select: {
       username: true,
@@ -101,13 +108,22 @@ class ActivitiesService {
       Prisma.ActivityWhereInput =
       {
         user: {
-          socialSettings: {
-            is: {
-              activityVisibility:
-                ActivityVisibility
-                  .PUBLIC,
+          OR: [
+            {
+              socialSettings: {
+                is: null,
+              },
             },
-          },
+            {
+              socialSettings: {
+                is: {
+                  activityVisibility:
+                    ActivityVisibility
+                      .PUBLIC,
+                },
+              },
+            },
+          ],
         },
       };
 
@@ -173,19 +189,28 @@ class ActivitiesService {
         },
 
         user: {
-          socialSettings: {
-            is: {
-              activityVisibility: {
-                in: [
-                  ActivityVisibility
-                    .PUBLIC,
-
-                  ActivityVisibility
-                    .FOLLOWERS,
-                ],
+          OR: [
+            {
+              socialSettings: {
+                is: null,
               },
             },
-          },
+            {
+              socialSettings: {
+                is: {
+                  activityVisibility: {
+                    in: [
+                      ActivityVisibility
+                        .PUBLIC,
+
+                      ActivityVisibility
+                        .FOLLOWERS,
+                    ],
+                  },
+                },
+              },
+            },
+          ],
         },
       };
 
@@ -398,6 +423,16 @@ class ActivitiesService {
       achievement:
         activity
           .achievement,
+
+      likeCount:
+        activity
+          ._count
+          .likes,
+
+      replyCount:
+        activity
+          ._count
+          .replies,
 
       createdAt:
         activity.createdAt,
@@ -699,6 +734,16 @@ class ActivitiesService {
       achievement:
         activity
           .achievement,
+
+      likeCount:
+        activity
+          ._count
+          .likes,
+
+      replyCount:
+        activity
+          ._count
+          .replies,
 
       createdAt:
         activity.createdAt,

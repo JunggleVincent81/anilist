@@ -54,6 +54,11 @@ function createActivity() {
     anime: null,
     achievement: null,
 
+    _count: {
+      likes: 0,
+      replies: 0,
+    },
+
     createdAt:
       new Date(
         '2026-10-08T00:00:00.000Z',
@@ -113,13 +118,22 @@ describe(
         ).toHaveBeenCalledWith({
           where: {
             user: {
-              socialSettings: {
-                is: {
-                  activityVisibility:
-                    ActivityVisibility
-                      .PUBLIC,
+              OR: [
+                {
+                  socialSettings: {
+                    is: null,
+                  },
                 },
-              },
+                {
+                  socialSettings: {
+                    is: {
+                      activityVisibility:
+                        ActivityVisibility
+                          .PUBLIC,
+                    },
+                  },
+                },
+              ],
             },
           },
         });

@@ -23,6 +23,14 @@ import {
 } from './activity-event.service.js';
 
 import {
+  ActivityInteractionsResolver,
+} from './activity-interactions.resolver.js';
+
+import {
+  ActivityInteractionsService,
+} from './activity-interactions.service.js';
+
+import {
   ActivitySettingsResolver,
 } from './activity-settings.resolver.js';
 
@@ -38,6 +46,9 @@ import {
   providers: [
     ActivitiesResolver,
     ActivitiesService,
+
+    ActivityInteractionsResolver,
+    ActivityInteractionsService,
     ActivityEventService,
 
     ActivitySettingsResolver,

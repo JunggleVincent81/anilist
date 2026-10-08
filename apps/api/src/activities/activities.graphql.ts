@@ -177,6 +177,36 @@ class ActivityItemType {
   achievement!:
     ActivityAchievementType | null;
 
+  @Field(() => Int)
+  likeCount!: number;
+
+  @Field(() => Int)
+  replyCount!: number;
+
+  @Field(
+    () =>
+      GraphQLISODateTime,
+  )
+  createdAt!: Date;
+}
+
+@ObjectType()
+class ActivityReplyType {
+  @Field(() => ID)
+  id!: string;
+
+  @Field(() => ID)
+  activityId!: string;
+
+  @Field(
+    () =>
+      ActivityActorType,
+  )
+  author!: ActivityActorType;
+
+  @Field()
+  body!: string;
+
   @Field(
     () =>
       GraphQLISODateTime,
@@ -206,6 +236,24 @@ class ActivityPageInfoType {
 }
 
 @ObjectType()
+class ActivityReplyPageType {
+  @Field(
+    () => [
+      ActivityReplyType,
+    ],
+  )
+  items!:
+    ActivityReplyType[];
+
+  @Field(
+    () =>
+      ActivityPageInfoType,
+  )
+  pageInfo!:
+    ActivityPageInfoType;
+}
+
+@ObjectType()
 class ActivityPageType {
   @Field(
     () => [
@@ -225,6 +273,8 @@ class ActivityPageType {
 
 export {
   ActivityAchievementType,
+  ActivityReplyPageType,
+  ActivityReplyType,
   ActivityActorType,
   ActivityAnimeType,
   ActivityItemType,

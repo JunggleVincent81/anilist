@@ -167,8 +167,10 @@ model User {
   socialSettings UserSocialSettings?
   activities     Activity[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  activityLikes   ActivityLike[]
+  activityReplies ActivityReply[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   @@index([equippedTitleAchievementId])
 }
@@ -552,8 +554,10 @@ model Activity {
 
   progressEpisodes Int?
 
-  achievementId String?      @db.Uuid
-  achievement   Achievement? @relation(fields: [achievementId], references: [id], onDelete: SetNull)
+  achievementId String?         @db.Uuid
+  achievement   Achievement?    @relation(fields: [achievementId], references: [id], onDelete: SetNull)
+  likes         ActivityLike[]
+  replies       ActivityReply[]
 
   createdAt DateTime @default(now())
 
@@ -562,4 +566,37 @@ model Activity {
   @@index([type, createdAt])
   @@index([animeId, createdAt])
   @@index([achievementId, createdAt])
+}
+
+model ActivityLike {
+  id String @id @default(uuid()) @db.Uuid
+
+  activityId String @db.Uuid
+  userId     String @db.Uuid
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([activityId, userId])
+  @@index([activityId, createdAt])
+  @@index([userId, createdAt])
+}
+
+model ActivityReply {
+  id String @id @default(uuid()) @db.Uuid
+
+  activityId String @db.Uuid
+  userId     String @db.Uuid
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  body String @db.VarChar(500)
+
+  createdAt DateTime @default(now())
+
+  @@index([activityId, createdAt])
+  @@index([userId, createdAt])
 }
