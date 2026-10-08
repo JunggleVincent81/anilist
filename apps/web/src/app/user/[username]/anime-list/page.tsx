@@ -237,6 +237,7 @@ export default async function AnimeListPage({
 
                   return (
                     <Button
+                      nativeButton={false}
                       key={
                         option.value ??
                         "ALL"
@@ -350,6 +351,7 @@ export default async function AnimeListPage({
                 {list.pageInfo
                   .hasPreviousPage ? (
                   <Button
+                    nativeButton={false}
                     variant="outline"
                     render={
                       <Link
@@ -387,6 +389,7 @@ export default async function AnimeListPage({
                 {list.pageInfo
                   .hasNextPage ? (
                   <Button
+                    nativeButton={false}
                     variant="outline"
                     render={
                       <Link

@@ -8,6 +8,10 @@ import {
 } from '@prisma/client';
 
 import {
+  AchievementReconciliationService,
+} from '../achievements/achievement-reconciliation.service.js';
+
+import {
   PrismaService,
 } from '../database/prisma.service.js';
 
@@ -60,6 +64,9 @@ export class AnimeFavoritesService {
   constructor(
     private readonly prisma:
       PrismaService,
+
+    private readonly achievementReconciliation?:
+      AchievementReconciliationService,
   ) {}
 
   async findPublic(
@@ -244,6 +251,12 @@ export class AnimeFavoritesService {
           select:
             animeFavoriteSelect,
         });
+
+    await this
+      .achievementReconciliation
+      ?.reconcileUser(
+        userId,
+      );
 
     return this.mapFavorite(
       favorite,

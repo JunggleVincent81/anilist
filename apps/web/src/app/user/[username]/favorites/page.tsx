@@ -72,6 +72,7 @@ export default async function UserFavoritesPage({
               </div>
 
               <Button
+                nativeButton={false}
                 variant="outline"
                 render={
                   <Link

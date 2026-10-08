@@ -9,6 +9,10 @@ import {
 } from '@prisma/client';
 
 import {
+  AchievementReconciliationService,
+} from '../achievements/achievement-reconciliation.service.js';
+
+import {
   PrismaService,
 } from '../database/prisma.service.js';
 
@@ -77,6 +81,9 @@ export class AnimeTrackingService {
   constructor(
     private readonly prisma:
       PrismaService,
+
+    private readonly achievementReconciliation?:
+      AchievementReconciliationService,
   ) {}
 
   async findMine(
@@ -482,6 +489,12 @@ export class AnimeTrackingService {
           select:
             animeListEntrySelect,
         });
+
+    await this
+      .achievementReconciliation
+      ?.reconcileUser(
+        userId,
+      );
 
     return this.mapEntry(
       entry,

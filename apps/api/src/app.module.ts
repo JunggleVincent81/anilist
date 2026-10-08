@@ -7,6 +7,10 @@ import {
 } from './airing-schedule/airing-schedule.module.js';
 
 import {
+  AchievementsModule,
+} from './achievements/achievements.module.js';
+
+import {
   AnimeFavoritesModule,
 } from './anime-favorites/anime-favorites.module.js';
 
@@ -52,6 +56,7 @@ import {
     AiringScheduleModule,
     AnimeTrackingModule,
     AnimeFavoritesModule,
+    AchievementsModule,
     UserStatisticsModule,
 
     GraphqlModule,

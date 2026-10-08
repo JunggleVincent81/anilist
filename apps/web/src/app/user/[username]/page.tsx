@@ -4,6 +4,11 @@ import {
 } from "next/navigation"
 
 import {
+  AwardIcon,
+  CrownIcon,
+} from "lucide-react"
+
+import {
   AnimeFavoritesGrid,
 } from "@/components/anime/anime-favorites-grid"
 import {
@@ -23,6 +28,9 @@ import {
 import {
   Button,
 } from "@/components/ui/button"
+import {
+  getUserAchievements,
+} from "@/lib/graphql/achievements"
 import {
   getAnimeFavorites,
 } from "@/lib/graphql/favorites"
@@ -95,10 +103,15 @@ export default async function UserProfilePage({
   }
 
   const [
+    achievements,
     favorites,
     statistics,
   ] =
     await Promise.all([
+      getUserAchievements(
+        profile.username,
+      ),
+
       getAnimeFavorites(
         profile.username,
       ),
@@ -109,6 +122,7 @@ export default async function UserProfilePage({
     ])
 
   if (
+    !achievements ||
     !favorites ||
     !statistics
   ) {
@@ -138,6 +152,12 @@ export default async function UserProfilePage({
       new Date(
         profile.createdAt,
       ),
+    )
+
+  const achievementPreview =
+    achievements.showcase.slice(
+      0,
+      3,
     )
 
   const favoritePreview =
@@ -186,6 +206,17 @@ export default async function UserProfilePage({
                         {profile.role}
                       </Badge>
                     ) : null}
+
+                    {achievements.equippedTitle ? (
+                      <Badge variant="outline">
+                        <CrownIcon />
+                        {
+                          achievements
+                            .equippedTitle
+                            .title
+                        }
+                      </Badge>
+                    ) : null}
                   </div>
 
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -209,6 +240,7 @@ export default async function UserProfilePage({
               className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
             >
               <Button
+                nativeButton={false}
                 variant="outline"
                 render={
                   <Link
@@ -220,6 +252,7 @@ export default async function UserProfilePage({
               </Button>
 
               <Button
+                nativeButton={false}
                 variant="outline"
                 render={
                   <Link
@@ -231,6 +264,7 @@ export default async function UserProfilePage({
               </Button>
 
               <Button
+                nativeButton={false}
                 variant="outline"
                 render={
                   <Link
@@ -242,8 +276,13 @@ export default async function UserProfilePage({
               </Button>
 
               <Button
+                nativeButton={false}
                 variant="outline"
-                disabled
+                render={
+                  <Link
+                    href={`/user/${profile.username}/achievements`}
+                  />
+                }
               >
                 Achievements
               </Button>
@@ -306,6 +345,109 @@ export default async function UserProfilePage({
                   }
                 />
               </div>
+            </section>
+
+            <section
+              aria-labelledby="profile-achievements"
+              className="mt-12"
+            >
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                    Milestones
+                  </p>
+
+                  <h2
+                    id="profile-achievements"
+                    className="mt-1 text-2xl font-semibold tracking-tight"
+                  >
+                    Achievement showcase
+                  </h2>
+
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {
+                      achievements.unlockedCount
+                    }
+                    {" / "}
+                    {
+                      achievements.total
+                    }
+                    {" unlocked"}
+                  </p>
+                </div>
+
+                <Link
+                  href={`/user/${profile.username}/achievements`}
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  View achievements →
+                </Link>
+              </div>
+
+              {achievementPreview.length >
+              0 ? (
+                <div className="mt-5 grid gap-4 md:grid-cols-3">
+                  {achievementPreview.map(
+                    (
+                      achievement,
+                    ) => (
+                      <article
+                        key={
+                          achievement.id
+                        }
+                        className="rounded-2xl border bg-card p-5"
+                      >
+                        <div className="flex size-10 items-center justify-center rounded-xl border bg-background">
+                          <AwardIcon
+                            aria-hidden="true"
+                            className="size-5"
+                          />
+                        </div>
+
+                        <p className="mt-4 font-semibold">
+                          {
+                            achievement.name
+                          }
+                        </p>
+
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          {
+                            achievement.description
+                          }
+                        </p>
+
+                        {achievement.titleReward ? (
+                          <Badge
+                            variant="outline"
+                            className="mt-4"
+                          >
+                            <CrownIcon />
+                            {
+                              achievement.titleReward
+                            }
+                          </Badge>
+                        ) : null}
+                      </article>
+                    ),
+                  )}
+                </div>
+              ) : (
+                <div className="mt-5 rounded-xl border border-dashed px-6 py-10 text-center">
+                  <AwardIcon
+                    aria-hidden="true"
+                    className="mx-auto size-6 text-muted-foreground"
+                  />
+
+                  <p className="mt-4 font-medium">
+                    No showcased achievements yet.
+                  </p>
+
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Featured milestones will
+                    appear here.
+                  </p>
+                </div>
+              )}
             </section>
 
             <section

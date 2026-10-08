@@ -110,6 +110,7 @@ export default async function UserStatisticsPage({
               </div>
 
               <Button
+                nativeButton={false}
                 variant="outline"
                 render={
                   <Link

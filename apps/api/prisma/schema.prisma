@@ -107,6 +107,26 @@ enum AnimeListStatus {
   REWATCHING
 }
 
+enum AchievementCategory {
+  JOURNEY
+  COMPLETION
+  EPISODES
+  RATING
+  REWATCH
+  FAVORITES
+  GENRE
+}
+
+enum AchievementMetric {
+  TRACKED_ANIME
+  COMPLETED_ANIME
+  EPISODES_LOGGED
+  SCORED_ANIME
+  REWATCHES
+  FAVORITE_ANIME
+  GENRE_ANIME
+}
+
 model User {
   id           String @id @default(uuid()) @db.Uuid
   email        String @unique @db.VarChar(320)
@@ -123,8 +143,14 @@ model User {
   animeListEntries AnimeListEntry[]
   animeFavorites   AnimeFavorite[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  achievementUnlocks UserAchievement[]
+
+  equippedTitleAchievementId String?      @db.Uuid
+  equippedTitleAchievement   Achievement? @relation("EquippedAchievementTitle", fields: [equippedTitleAchievementId], references: [id], onDelete: SetNull)
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
+
+  @@index([equippedTitleAchievementId])
 }
 
 model Session {
@@ -388,7 +414,6 @@ model AnimeListEntry {
   @@index([userId, status, updatedAt])
 }
 
-
 model AnimeFavorite {
   id String @id @default(uuid()) @db.Uuid
 
@@ -403,4 +428,58 @@ model AnimeFavorite {
   @@unique([userId, animeId])
   @@index([animeId])
   @@index([userId, createdAt])
+}
+
+model Achievement {
+  id String @id @default(uuid()) @db.Uuid
+
+  code String @unique @db.VarChar(64)
+
+  name        String @db.VarChar(120)
+  description String @db.VarChar(500)
+
+  category AchievementCategory
+  metric   AchievementMetric
+
+  threshold Int
+
+  targetKey String? @db.VarChar(191)
+
+  iconKey String @db.VarChar(64)
+
+  titleReward String? @db.VarChar(80)
+
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  unlocks UserAchievement[]
+
+  equippedByUsers User[] @relation("EquippedAchievementTitle")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([metric])
+  @@index([category])
+  @@index([isActive, sortOrder])
+}
+
+model UserAchievement {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId        String @db.Uuid
+  achievementId String @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  unlockedAt DateTime @default(now())
+
+  showcasePosition Int?
+
+  @@unique([userId, achievementId])
+  @@unique([userId, showcasePosition])
+  @@index([achievementId])
+  @@index([userId, unlockedAt])
 }

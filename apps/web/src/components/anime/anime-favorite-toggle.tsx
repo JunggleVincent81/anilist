@@ -223,6 +223,7 @@ export function AnimeFavoriteToggle({
   ) {
     return (
       <Button
+        nativeButton={false}
         variant="outline"
         className="w-full"
         render={

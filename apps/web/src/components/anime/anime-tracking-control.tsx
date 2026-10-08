@@ -453,6 +453,7 @@ function AnimeTrackingControl({
         </p>
 
         <Button
+          nativeButton={false}
           className="w-full"
           render={
             <Link

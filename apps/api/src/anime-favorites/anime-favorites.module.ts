@@ -7,6 +7,10 @@ import {
 } from '../auth/authorization/require-auth.guard.js';
 
 import {
+  AchievementsModule,
+} from '../achievements/achievements.module.js';
+
+import {
   DatabaseModule,
 } from '../database/database.module.js';
 
@@ -21,6 +25,7 @@ import {
 @Module({
   imports: [
     DatabaseModule,
+    AchievementsModule,
   ],
 
   providers: [

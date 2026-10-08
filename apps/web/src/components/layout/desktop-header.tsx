@@ -28,6 +28,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -254,52 +255,54 @@ function DesktopHeader() {
                 sideOffset={8}
                 className="min-w-52"
               >
-                <DropdownMenuLabel>
-                  <div className="min-w-0">
-                    <p className="truncate">
-                      {accountName}
-                    </p>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <div className="min-w-0">
+                      <p className="truncate">
+                        {accountName}
+                      </p>
 
-                    <p className="truncate text-xs font-normal text-muted-foreground">
-                      @{user.username}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
+                      <p className="truncate text-xs font-normal text-muted-foreground">
+                        @{user.username}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
 
-                <DropdownMenuSeparator />
+                  <DropdownMenuSeparator />
 
-                <DropdownMenuItem
-                  render={
-                    <Link
-                      href={`/user/${user.username}`}
-                    />
-                  }
-                >
-                  <UserIcon />
-                  Profile
-                </DropdownMenuItem>
+                  <DropdownMenuItem
+                    render={
+                      <Link
+                        href={`/user/${user.username}`}
+                      />
+                    }
+                  >
+                    <UserIcon />
+                    Profile
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  render={
-                    <Link
-                      href={`/user/${user.username}/anime-list`}
-                    />
-                  }
-                >
-                  <ListIcon />
-                  Anime List
-                </DropdownMenuItem>
+                  <DropdownMenuItem
+                    render={
+                      <Link
+                        href={`/user/${user.username}/anime-list`}
+                      />
+                    }
+                  >
+                    <ListIcon />
+                    Anime List
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  render={
-                    <Link
-                      href="/settings"
-                    />
-                  }
-                >
-                  <SettingsIcon />
-                  Settings
-                </DropdownMenuItem>
+                  <DropdownMenuItem
+                    render={
+                      <Link
+                        href="/settings"
+                      />
+                    }
+                  >
+                    <SettingsIcon />
+                    Settings
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
 
                 <DropdownMenuSeparator />
 

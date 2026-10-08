@@ -13,8 +13,8 @@
 | 6 | Tracking MVP | PLANNED |
 | 7 | Profile, Favorites & Statistics | COMPLETE |
 | 8 | Seasonal, Airing & Discovery+ | COMPLETE |
-| 9 | Achievements & Gratification | PLANNED |
-| 10 | Social, Community & Production | PLANNED |
+| 9 | Achievements & Gratification | COMPLETE |
+| 10 | Social, Community & Production | NEXT |
 
 ## Major Milestones
 
@@ -37,7 +37,7 @@ Profile, statistics, favorites, seasonal anime, dan airing schedule sudah terint
 ### Milestone E — Identity & Gratification
 Phase 9 selesai.
 
-Achievement engine, badges, rarity, secret achievements, titles, dan showcase tersedia.
+Achievement engine, permanent milestones, progress, unlockable titles, dan three-slot profile showcase tersedia.
 
 ### Milestone F — Social Platform V1
 Phase 10 selesai.

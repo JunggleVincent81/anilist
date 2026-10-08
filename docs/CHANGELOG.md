@@ -1,5 +1,50 @@
 # Documentation Changelog
 
+## 2026-10-08 — Phase 9 Achievements & Gratification
+
+### Added
+
+- persistent Achievement and UserAchievement domain
+- permanent historical achievement unlocks
+- 17-milestone initial achievement catalog
+- achievement metric evaluation engine
+- automatic tracking and favorite reconciliation
+- authenticated manual reconciliation/backfill
+- public and authenticated achievement GraphQL queries
+- three-slot profile achievement showcase
+- unlockable achievement titles
+- `/user/[username]/achievements`
+- profile achievement summary and showcase
+- owner showcase and title controls
+- Phase 9 validation and completion documentation
+
+### Product Rules
+
+- no XP system
+- no account leveling
+- no achievement currency
+- no daily streak farming
+- no rarity economy
+- unlocks are never revoked when current metrics later decrease
+- public achievement reads remain side-effect free
+
+### Fixed
+
+- corrected Base UI DropdownMenuLabel group composition
+- corrected Link-rendered Button native semantics
+- regression-validated profile navigation routes
+
+### Validated
+
+- Prisma achievement migrations
+- achievement catalog and evaluator
+- achievement reconciliation
+- tracking and favorites integration
+- GraphQL achievement API
+- profile showcase and titles
+- workspace typecheck and lint
+- API and web production builds
+
 ## 2026-10-07 — Phase 5 Anime Detail
 
 ### Added
