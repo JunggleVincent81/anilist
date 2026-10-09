@@ -82,7 +82,7 @@ export async function HomeSeasonAndAiring() {
               <Clapperboard aria-hidden="true" className="size-5 text-primary" /> {seasonName} Anime
             </h2>
           </div>
-          <Link href={seasonLink} className="shrink-0 text-xs font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+          <Link href={seasonLink} className="inline-flex min-h-11 shrink-0 items-center gap-1 text-xs font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
             View all <ArrowUpRight aria-hidden="true" className="inline size-3.5" />
           </Link>
         </div>
@@ -119,7 +119,7 @@ export async function HomeSeasonAndAiring() {
           <h2 id="home-airing-today-title" className="flex items-center gap-2 text-xl font-semibold tracking-tight">
             <CalendarClock aria-hidden="true" className="size-5 text-primary" /> Airing Today
           </h2>
-          <Link href="/schedule" className="shrink-0 text-xs font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+          <Link href="/schedule" className="inline-flex min-h-11 shrink-0 items-center gap-1 text-xs font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
             Schedule <ArrowUpRight aria-hidden="true" className="inline size-3.5" />
           </Link>
         </div>

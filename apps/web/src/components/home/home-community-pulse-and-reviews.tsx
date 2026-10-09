@@ -23,7 +23,7 @@ export async function HomeCommunityPulseAndReviews() {
           <h2 id="home-community-title" className="mt-1 text-2xl font-bold tracking-tight">From the community</h2>
           <p className="mt-2 text-sm text-muted-foreground">Recent public updates and reviews from other fans.</p>
         </div>
-        <Link href="/feed" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <Link href="/feed" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
           Open feed <ArrowUpRight aria-hidden="true" className="size-4" />
         </Link>
       </div>

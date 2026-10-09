@@ -1,11 +1,13 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { Suspense } from "react"
 import { ArrowUpRight, CalendarDays, Compass, Sparkles } from "lucide-react"
 import { ContentSection } from "@/components/layout/content-section"
 import { PageContainer } from "@/components/layout/page-container"
 import { FeaturedAnimeSpotlight } from "@/components/home/featured-anime-spotlight"
 import { HomeSeasonAndAiring } from "@/components/home/home-season-airing"
 import { HomeCommunityPulseAndReviews } from "@/components/home/home-community-pulse-and-reviews"
+import { HomeSectionLoading } from "@/components/home/home-section-loading"
 
 // Prevent build-time static prerendering of the live GraphQL spotlight.
 export const dynamic = "force-dynamic"
@@ -45,8 +47,12 @@ export default function HomePage() {
       <PageContainer>
         <ContentSection spacing="lg">
           <div className="mx-auto w-full max-w-6xl space-y-9 pb-16 sm:space-y-12">
-            <FeaturedAnimeSpotlight />
-            <HomeSeasonAndAiring />
+            <Suspense fallback={<HomeSectionLoading label="Featured anime" variant="hero" />}>
+              <FeaturedAnimeSpotlight />
+            </Suspense>
+            <Suspense fallback={<HomeSectionLoading label="Seasonal anime and airing schedule" variant="grid" />}>
+              <HomeSeasonAndAiring />
+            </Suspense>
 
             <section aria-labelledby="anime-paths-title">
               <div className="mb-5">
@@ -72,7 +78,16 @@ export default function HomePage() {
               </div>
             </section>
 
-            <HomeCommunityPulseAndReviews />
+            <Suspense fallback={<HomeSectionLoading label="Community updates and reviews" variant="grid" />}>
+              <HomeCommunityPulseAndReviews />
+            </Suspense>
+            <footer aria-label="Homepage footer" className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground">
+              <p>Anime discovery, tracking, and community. No streaming.</p>
+              <nav aria-label="Homepage quick links" className="flex flex-wrap items-center gap-x-5 gap-y-1">
+                <Link href="/discover" className="inline-flex min-h-11 items-center hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Anime database</Link>
+                <Link href="/feed" className="inline-flex min-h-11 items-center hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Community feed</Link>
+              </nav>
+            </footer>
           </div>
         </ContentSection>
       </PageContainer>
