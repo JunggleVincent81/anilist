@@ -60,6 +60,7 @@ import {
 
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { ModerationModule } from './moderation/moderation.module.js';
+import { AdminCatalogModule } from './admin-catalog/admin-catalog.module.js';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { ModerationModule } from './moderation/moderation.module.js';
     ReviewsModule,
     NotificationsModule,
     ModerationModule,
+    AdminCatalogModule,
     AnimeModule,
     AiringScheduleModule,
     AnimeTrackingModule,

@@ -275,6 +275,11 @@ function DesktopHeader() {
                     Anime List
                   </DropdownMenuItem>
 
+                  {user.role === "ADMIN" ? (
+                    <DropdownMenuItem render={<Link href="/admin/catalog" />}>
+                      Catalog admin
+                    </DropdownMenuItem>
+                  ) : null}
                   <DropdownMenuItem
                     render={
                       <Link
