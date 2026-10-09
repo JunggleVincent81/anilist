@@ -13,6 +13,7 @@ import {
 import type {
   PrismaService,
 } from '../database/prisma.service.js';
+import type { NotificationsService } from '../notifications/notifications.service.js';
 
 import {
   ActivityInteractionValidationError,
@@ -22,6 +23,13 @@ import {
 import {
   ActivityInteractionsService,
 } from './activity-interactions.service.js';
+
+
+const AN123_NOTIFICATION_MOCK = {
+  notifyFollowBestEffort: jest.fn(async () => {}),
+  notifyActivityLikeBestEffort: jest.fn(async () => {}),
+  notifyActivityReplyBestEffort: jest.fn(async () => {}),
+} as unknown as NotificationsService;
 
 const VIEWER_ID =
   '11111111-1111-4111-8111-111111111111';
@@ -126,9 +134,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.like(
@@ -210,9 +216,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.like(
@@ -264,9 +268,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.like(
@@ -301,9 +303,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.createReply(
@@ -351,9 +351,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         const result =
           await service
@@ -410,9 +408,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.createReply(
@@ -465,9 +461,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         const result =
           await service
@@ -535,9 +529,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.deleteMine(
@@ -582,9 +574,7 @@ describe(
           PrismaService;
 
         const service =
-          new ActivityInteractionsService(
-            prisma,
-          );
+          new ActivityInteractionsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.unlike(

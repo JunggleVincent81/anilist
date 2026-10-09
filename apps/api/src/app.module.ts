@@ -58,6 +58,8 @@ import {
   UsersModule,
 } from './users/users.module.js';
 
+import { NotificationsModule } from './notifications/notifications.module.js';
+
 @Module({
   imports: [
     DatabaseModule,
@@ -67,6 +69,7 @@ import {
     UserFollowsModule,
     ActivitiesModule,
     ReviewsModule,
+    NotificationsModule,
     AnimeModule,
     AiringScheduleModule,
     AnimeTrackingModule,

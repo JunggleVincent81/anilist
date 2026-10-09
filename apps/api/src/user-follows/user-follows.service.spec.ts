@@ -8,6 +8,7 @@ import {
 import type {
   PrismaService,
 } from '../database/prisma.service.js';
+import type { NotificationsService } from '../notifications/notifications.service.js';
 
 import {
   UserFollowValidationError,
@@ -16,6 +17,13 @@ import {
 import {
   UserFollowsService,
 } from './user-follows.service.js';
+
+
+const AN123_NOTIFICATION_MOCK = {
+  notifyFollowBestEffort: jest.fn(async () => {}),
+  notifyActivityLikeBestEffort: jest.fn(async () => {}),
+  notifyActivityReplyBestEffort: jest.fn(async () => {}),
+} as unknown as NotificationsService;
 
 const VIEWER_ID =
   '11111111-1111-4111-8111-111111111111';
@@ -47,9 +55,7 @@ describe(
         } as unknown as PrismaService;
 
         const service =
-          new UserFollowsService(
-            prisma,
-          );
+          new UserFollowsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.findSummary(
@@ -91,9 +97,7 @@ describe(
         } as unknown as PrismaService;
 
         const service =
-          new UserFollowsService(
-            prisma,
-          );
+          new UserFollowsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.follow(
@@ -166,9 +170,7 @@ describe(
         } as unknown as PrismaService;
 
         const service =
-          new UserFollowsService(
-            prisma,
-          );
+          new UserFollowsService(prisma, AN123_NOTIFICATION_MOCK);
 
         const result =
           await service.follow(
@@ -263,9 +265,7 @@ describe(
         } as unknown as PrismaService;
 
         const service =
-          new UserFollowsService(
-            prisma,
-          );
+          new UserFollowsService(prisma, AN123_NOTIFICATION_MOCK);
 
         const result =
           await service.unfollow(
@@ -327,9 +327,7 @@ describe(
         } as unknown as PrismaService;
 
         const service =
-          new UserFollowsService(
-            prisma,
-          );
+          new UserFollowsService(prisma, AN123_NOTIFICATION_MOCK);
 
         await expect(
           service.findSummary(
@@ -399,9 +397,7 @@ describe(
         } as unknown as PrismaService;
 
         const service =
-          new UserFollowsService(
-            prisma,
-          );
+          new UserFollowsService(prisma, AN123_NOTIFICATION_MOCK);
 
         const result =
           await service

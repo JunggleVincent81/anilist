@@ -9,6 +9,7 @@ import type {
 import {
   PrismaService,
 } from '../database/prisma.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 
 import type {
   UserFollowListInput,
@@ -44,6 +45,7 @@ class UserFollowsService {
   constructor(
     private readonly prisma:
       PrismaService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async findSummary(
@@ -133,7 +135,7 @@ class UserFollowsService {
       );
     }
 
-    await this.prisma
+    const followRecord = await this.prisma
       .userFollow
       .upsert({
         where: {
@@ -152,6 +154,12 @@ class UserFollowsService {
 
         update: {},
       });
+
+    await this.notifications.notifyFollowBestEffort({
+      recipientId: target.id,
+      actorId: followerId,
+      sourceId: followRecord.id,
+    });
 
     return this.buildStatus(
       followerId,

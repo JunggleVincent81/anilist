@@ -10,6 +10,7 @@ import {
 import {
   PrismaService,
 } from '../database/prisma.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 
 import {
   ActivityInteractionValidationError,
@@ -55,6 +56,7 @@ class ActivityInteractionsService {
   constructor(
     private readonly prisma:
       PrismaService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async like(
@@ -66,7 +68,7 @@ class ActivityInteractionsService {
       userId,
     );
 
-    await this.prisma
+    const likeRecord = await this.prisma
       .activityLike
       .upsert({
         where: {
@@ -87,6 +89,12 @@ class ActivityInteractionsService {
           id: true,
         },
       });
+
+    await this.notifications.notifyActivityLikeBestEffort({
+      actorId: userId,
+      activityId,
+      sourceId: likeRecord.id,
+    });
 
     return true;
   }
@@ -262,6 +270,12 @@ class ActivityInteractionsService {
           select:
             replySelect,
         });
+
+    await this.notifications.notifyActivityReplyBestEffort({
+      actorId: userId,
+      activityId,
+      sourceId: reply.id,
+    });
 
     return this.mapReply(
       reply,

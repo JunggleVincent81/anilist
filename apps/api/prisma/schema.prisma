@@ -167,11 +167,13 @@ model User {
   socialSettings UserSocialSettings?
   activities     Activity[]
 
-  activityLikes   ActivityLike[]
-  activityReplies ActivityReply[]
-  animeReviews    AnimeReview[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  activityLikes         ActivityLike[]
+  activityReplies       ActivityReply[]
+  animeReviews          AnimeReview[]
+  notificationsReceived Notification[]  @relation("NotificationRecipient")
+  notificationsSent     Notification[]  @relation("NotificationActor")
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
 
   @@index([equippedTitleAchievementId])
 }
@@ -560,6 +562,7 @@ model Activity {
   achievement   Achievement?    @relation(fields: [achievementId], references: [id], onDelete: SetNull)
   likes         ActivityLike[]
   replies       ActivityReply[]
+  notifications Notification[]
 
   createdAt DateTime @default(now())
 
@@ -626,4 +629,30 @@ model AnimeReview {
   @@unique([userId, animeId])
   @@index([animeId, createdAt, id])
   @@index([userId, createdAt, id])
+}
+
+// AN-123: Private in-app notifications for follow, activity likes and replies.
+enum NotificationKind {
+  FOLLOW
+  ACTIVITY_LIKE
+  ACTIVITY_REPLY
+}
+
+model Notification {
+  id               String           @id @default(uuid()) @db.Uuid
+  recipientId      String           @db.Uuid
+  actorId          String           @db.Uuid
+  recipient        User             @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actor            User             @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+  kind             NotificationKind
+  sourceId         String           @db.Uuid
+  targetActivityId String?          @db.Uuid
+  targetActivity   Activity?        @relation(fields: [targetActivityId], references: [id], onDelete: SetNull)
+  isRead           Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+
+  @@unique([recipientId, kind, sourceId])
+  @@index([recipientId, isRead, createdAt, id])
+  @@index([recipientId, createdAt, id])
+  @@index([targetActivityId])
 }

@@ -9,6 +9,7 @@ import {
 import {
   DatabaseModule,
 } from '../database/database.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 
 import {
   UserFollowsResolver,
@@ -21,6 +22,7 @@ import {
 @Module({
   imports: [
     DatabaseModule,
+    NotificationsModule,
   ],
 
   providers: [
