@@ -22,6 +22,7 @@ import {
 import {
   loadEnvironment,
 } from '../config/environment.js';
+import { graphqlQuerySafetyRule } from './graphql-query-safety.rule.js';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import {
             sortSchema: true,
 
             csrfPrevention: true,
+            validationRules: [graphqlQuerySafetyRule],
 
             introspection:
               !isProduction,
