@@ -5,6 +5,10 @@ import type {
   AnimeSeason,
 } from '@prisma/client';
 
+import type {
+  SourceImageCandidate,
+} from './anime-import-image-candidate.js';
+
 type ExternalAnimeIdentity = {
   provider: AnimeDataProvider;
   externalId: string;
@@ -28,6 +32,9 @@ type NormalizedAnimeRecord = {
   tags: string[];
   studios: string[];
   producers: string[];
+
+  // Unlicensed source metadata. Not a displayable Anime cover.
+  imageCandidates: SourceImageCandidate[];
 
   externalIds: ExternalAnimeIdentity[];
   relatedExternalIds: ExternalAnimeIdentity[];

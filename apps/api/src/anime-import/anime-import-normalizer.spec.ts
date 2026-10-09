@@ -66,6 +66,9 @@ describe(
               'action',
               'space',
             ],
+
+            picture: 'https://cdn.myanimelist.net/images/anime/4/19644.jpg',
+            thumbnail: 'https://cdn.myanimelist.net/images/anime/4/19644t.jpg',
           },
           2,
         );
@@ -106,6 +109,14 @@ describe(
       expect(
         result.externalIds,
       ).toHaveLength(2);
+
+      expect(result.imageCandidates).toHaveLength(2);
+      expect(result.imageCandidates[0]).toMatchObject({
+        sourceField: 'picture',
+        sourceHost: 'cdn.myanimelist.net',
+        rightsStatus: 'UNVERIFIED',
+        displayApproved: false,
+      });
     });
 
     it('maps zero episodes to unknown', () => {

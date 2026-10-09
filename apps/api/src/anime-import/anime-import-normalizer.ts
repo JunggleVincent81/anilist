@@ -12,6 +12,10 @@ import {
   parseExternalAnimeIdentity,
 } from './anime-import-identity.js';
 
+import {
+  normalizeSourceImageCandidates,
+} from './anime-import-image-candidate.js';
+
 import type {
   ExternalAnimeIdentity,
   NormalizedAnimeRecord,
@@ -335,6 +339,10 @@ function normalizeAnimeRecord(
       ),
 
     externalIds,
+
+    // Candidate URLs are never persisted or exposed by this importer.
+    imageCandidates:
+      normalizeSourceImageCandidates(record),
 
     relatedExternalIds:
       normalizeIdentities(
