@@ -1,4 +1,7 @@
 import { UseGuards } from '@nestjs/common';
+import { Int } from '@nestjs/graphql';
+import { AdminSynopsisQueueService } from './admin-synopsis-queue.service.js';
+import { AdminSynopsisQueuePage } from './admin-synopsis-queue.graphql.js';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserRole } from '@prisma/client';
 import { Roles } from '../auth/authorization/roles.decorator.js';
@@ -13,7 +16,7 @@ import { AdminSynopsisDraftType, CreateAdminSynopsisDraftInput, UpdateAdminSynop
 
 @Resolver()
 export class AdminCatalogResolver {
-  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService) {}
+  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService) {}
 
   @Query(() => AdminCatalogOverviewType)
   @UseGuards(RolesGuard)
@@ -63,4 +66,11 @@ export class AdminCatalogResolver {
   reviewAdminSynopsisSubmission(@Args('input') input: ReviewAdminSynopsisInput, @Context() context: GraphQLAuthContext): Promise<AdminSynopsisWorkflowType> {
     return this.synopsisReviews.review(context.currentUser!.id, input);
   }
+  @Query(() => AdminSynopsisQueuePage)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminSynopsisReviewQueue(@Args('page', { type: () => Int, nullable: true }) page?: number): Promise<AdminSynopsisQueuePage> {
+    return this.synopsisQueue.page(page ?? 1);
+  }
+
 }

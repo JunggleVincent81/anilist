@@ -72,7 +72,7 @@ export function AdminCatalogDashboard() {
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Administration / catalog</p>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div><h1 className="text-3xl font-bold tracking-tight">Catalog curation</h1><p className="mt-2 text-sm text-muted-foreground">Private catalog inspection and separate synopsis drafting. Canonical edits and publishing remain disabled.</p></div>
-          <button type="button" onClick={() => setRefresh((n) => n + 1)} className={controlStyle}>Refresh data</button>
+          <Link href="/admin/catalog/review" className={controlStyle}>Review submissions</Link><button type="button" onClick={() => setRefresh((n) => n + 1)} className={controlStyle}>Refresh data</button>
         </div>
       </header>
 
