@@ -4,6 +4,7 @@ import { ArrowUpRight, CalendarDays, Compass, MessagesSquare, Sparkles } from "l
 import { ContentSection } from "@/components/layout/content-section"
 import { PageContainer } from "@/components/layout/page-container"
 import { FeaturedAnimeSpotlight } from "@/components/home/featured-anime-spotlight"
+import { HomeSeasonAndAiring } from "@/components/home/home-season-airing"
 
 // Prevent build-time static prerendering of the live GraphQL spotlight.
 export const dynamic = "force-dynamic"
@@ -44,6 +45,7 @@ export default function HomePage() {
         <ContentSection spacing="lg">
           <div className="mx-auto w-full max-w-6xl space-y-9 pb-16 sm:space-y-12">
             <FeaturedAnimeSpotlight />
+            <HomeSeasonAndAiring />
 
             <section aria-labelledby="anime-paths-title">
               <div className="mb-5">
