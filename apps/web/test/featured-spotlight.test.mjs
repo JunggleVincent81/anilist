@@ -69,7 +69,11 @@ test("AN-132 keeps one compact server-rendered hero and separate feed", () => {
   assert.match(home, /export const dynamic = "force-dynamic"/)
   assert.match(home, /<FeaturedAnimeSpotlight \/>/)
   assert.equal((home.match(/<FeaturedAnimeSpotlight \/>/g) || []).length, 1)
-  assert.match(home, /From the community/)
+  // AN-135 extracted this section: verify both placement and visible content.
+  const community = read("../src/components/home/home-community-pulse-and-reviews.tsx")
+  assert.match(home, /<HomeCommunityPulseAndReviews \/>/)
+  assert.match(community, /From the community/)
+  assert.match(community, /href="\/feed"/)
   assert.match(feed, /<ActivityFeed \/>/)
   assert.doesNotMatch(home, /<ActivityFeed \/>/)
   assert.match(component, /View details/)

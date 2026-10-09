@@ -65,7 +65,7 @@ test("AN-133 integrates compact sections only on Home and preserves existing Fee
   const client=read("../src/components/home/today-airing-list.tsx")
   assert.equal((home.match(/<HomeSeasonAndAiring \/>/g)||[]).length,1)
   assert.match(home,/<FeaturedAnimeSpotlight \/>/)
-  assert.match(home,/From the community/)
+  assert.match(home,/<HomeCommunityPulseAndReviews \/>/)
   assert.match(feed,/<ActivityFeed \/>/)
   assert.doesNotMatch(home,/<ActivityFeed/)
   assert.match(source,/sm:grid-cols-4/)

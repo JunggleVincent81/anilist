@@ -161,6 +161,21 @@ describe('ReviewsService', () => {
     };
   }
 
+  it('only previews 3 newest non-spoiler reviews for confirmed non-adult INCLUDED anime', async () => {
+    const { service, reviewFindMany } = setup();
+    const result = await service.findRecentPublic();
+    expect(result).toHaveLength(1);
+    expect(reviewFindMany).toHaveBeenCalledWith({
+      where: {
+        isSpoiler: false,
+        anime: { is: { catalogStatus: AnimeCatalogStatus.INCLUDED, isAdult: false } },
+      },
+      select: expect.any(Object),
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: 3,
+    });
+  });
+
   it('creates a review for an included anime', async () => {
     const { service, reviewCreate } = setup();
 

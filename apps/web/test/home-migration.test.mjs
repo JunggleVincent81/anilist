@@ -12,7 +12,7 @@ test("AN-131: root is a discovery landing, not a duplicate activity feed", () =>
   assert.match(home, /export default function HomePage/)
   assert.doesNotMatch(home, /ActivityFeed|fetchActivityFeed|postTextActivity/)
   assert.match(home, /<FeaturedAnimeSpotlight \/>/)
-  assert.match(home, /From the community/)
+  assert.match(home, /<HomeCommunityPulseAndReviews \/>/)
   assert.match(home, /title: "Home \| Anime Platform"/)
 })
 
@@ -31,7 +31,7 @@ test("AN-131: only links to real existing anime and social routes", () => {
   for (const path of ["discover", "season", "schedule", "feed"]) {
     const page = fileURLToPath(new URL(`../src/app/${path}/page.tsx`, import.meta.url))
     assert.ok(existsSync(page), `Route missing: /${path}`)
-    assert.match(home, new RegExp(`href: "\\/${path}"|href="\\/${path}"`))
+    assert.match(path === "feed" ? read("../src/components/home/home-community-pulse-and-reviews.tsx") : home, new RegExp(`href: "\\/${path}"|href="\\/${path}"`))
   }
   assert.doesNotMatch(home, /href="\/(manga|music|watch|stream)/)
 })
@@ -59,6 +59,6 @@ test("AN-131: transition home retains light, responsive, accessible structure", 
   assert.match(home, /md:grid-cols-3/)
   assert.match(read("../src/components/home/featured-anime-spotlight.tsx"), /aria-labelledby="home-intro-title"/)
   assert.match(home, /aria-labelledby="anime-paths-title"/)
-  assert.match(home, /aria-labelledby="home-community-title"/)
+  assert.match(read("../src/components/home/home-community-pulse-and-reviews.tsx"), /aria-labelledby="home-community-title"/)
   assert.doesNotMatch(home, /<img|<video|autoplay|Watch Now/)
 })

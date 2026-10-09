@@ -244,6 +244,25 @@ class ReviewsService {
     });
   }
 
+  // Homepage-only preview; fail closed while catalog age provenance is unresolved.
+  // Spoiler-tagged reviews and unverified/adult anime never enter this public list.
+  async findRecentPublic(): Promise<ReviewRecord[]> {
+    return this.prisma.animeReview.findMany({
+      where: {
+        isSpoiler: false,
+        anime: {
+          is: {
+            catalogStatus: AnimeCatalogStatus.INCLUDED,
+            isAdult: false,
+          },
+        },
+      },
+      select: reviewSelect,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: 3,
+    });
+  }
+
   async findByAnime(
     animeId: string,
     input?: ReviewPaginationInput,

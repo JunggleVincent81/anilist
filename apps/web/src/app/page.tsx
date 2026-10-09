@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowUpRight, CalendarDays, Compass, MessagesSquare, Sparkles } from "lucide-react"
+import { ArrowUpRight, CalendarDays, Compass, Sparkles } from "lucide-react"
 import { ContentSection } from "@/components/layout/content-section"
 import { PageContainer } from "@/components/layout/page-container"
 import { FeaturedAnimeSpotlight } from "@/components/home/featured-anime-spotlight"
 import { HomeSeasonAndAiring } from "@/components/home/home-season-airing"
+import { HomeCommunityPulseAndReviews } from "@/components/home/home-community-pulse-and-reviews"
 
 // Prevent build-time static prerendering of the live GraphQL spotlight.
 export const dynamic = "force-dynamic"
@@ -71,24 +72,7 @@ export default function HomePage() {
               </div>
             </section>
 
-            <section aria-labelledby="home-community-title" className="rounded-2xl border border-border bg-surface p-5 sm:p-7">
-              <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-                <div className="max-w-2xl">
-                  <MessagesSquare aria-hidden="true" className="size-5 text-primary" />
-                  <h2 id="home-community-title" className="mt-3 text-xl font-semibold">From the community</h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Read updates from anime fans, publish your thoughts, and join conversations.
-                    Your full activity feed now lives on its own page.
-                  </p>
-                </div>
-                <Link
-                  href="/feed"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:self-center"
-                >
-                  Open feed <ArrowUpRight aria-hidden="true" className="size-4" />
-                </Link>
-              </div>
-            </section>
+            <HomeCommunityPulseAndReviews />
           </div>
         </ContentSection>
       </PageContainer>

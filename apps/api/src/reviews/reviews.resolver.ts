@@ -137,6 +137,12 @@ class ReviewsResolver {
     return this.reviewsService.getAnimeStats(animeId);
   }
 
+  @Query(() => [AnimeReviewType])
+  async recentPublicAnimeReviews(): Promise<AnimeReviewType[]> {
+    const items = await this.reviewsService.findRecentPublic();
+    return items.map(mapReview);
+  }
+
   @Query(() => AnimeReviewPageType)
   async animeReviews(
     @Args('animeId', { type: () => ID })
