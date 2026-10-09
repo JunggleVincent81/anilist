@@ -169,6 +169,7 @@ model User {
 
   activityLikes   ActivityLike[]
   activityReplies ActivityReply[]
+  animeReviews    AnimeReview[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -247,6 +248,7 @@ model Anime {
   animeListEntries AnimeListEntry[]
   favoriteEntries  AnimeFavorite[]
   activities       Activity[]
+  reviews          AnimeReview[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -599,4 +601,29 @@ model ActivityReply {
 
   @@index([activityId, createdAt])
   @@index([userId, createdAt])
+}
+
+// AN-122: Anime Reviews
+model AnimeReview {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId  String @db.Uuid
+  animeId String @db.Uuid
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Cascade)
+
+  title String? @db.VarChar(150)
+  body  String  @db.VarChar(10000)
+
+  score Decimal? @db.Decimal(3, 1)
+
+  isSpoiler Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, animeId])
+  @@index([animeId, createdAt, id])
+  @@index([userId, createdAt, id])
 }

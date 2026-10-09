@@ -61,6 +61,49 @@ class ActivityEventService {
     }
   }
 
+  async recordReviewPublishedBestEffort(
+    input: {
+      userId: string;
+      animeId: string;
+    },
+  ): Promise<void> {
+    try {
+      const settings =
+        await this.prisma.userSocialSettings.findUnique({
+          where: {
+            userId: input.userId,
+          },
+          select: {
+            autoActivityEnabled: true,
+          },
+        });
+
+      if (!settings?.autoActivityEnabled) {
+        return;
+      }
+
+      await this.prisma.activity.create({
+        data: {
+          userId: input.userId,
+          animeId: input.animeId,
+          type: ActivityType.REVIEW_PUBLISHED,
+        },
+        select: {
+          id: true,
+        },
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : String(error);
+
+      this.logger.warn(
+        `Review activity generation failed: ${message}`,
+      );
+    }
+  }
+
   private async recordTrackingUpdate(
     input:
       TrackingActivityDelta,

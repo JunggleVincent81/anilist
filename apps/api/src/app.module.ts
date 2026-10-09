@@ -51,6 +51,10 @@ import {
 } from './user-follows/user-follows.module.js';
 
 import {
+  ReviewsModule,
+} from './reviews/reviews.module.js';
+
+import {
   UsersModule,
 } from './users/users.module.js';
 
@@ -62,6 +66,7 @@ import {
     UsersModule,
     UserFollowsModule,
     ActivitiesModule,
+    ReviewsModule,
     AnimeModule,
     AiringScheduleModule,
     AnimeTrackingModule,
