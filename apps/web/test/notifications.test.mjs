@@ -29,8 +29,8 @@ test("notification text is derived from supported types, not untrusted HTML", ()
 })
 test("follow notifications navigate to encoded profiles; activity navigates to feed", () => {
   assert.equal(notificationHref("FOLLOW", "user name"), "/user/user%20name")
-  assert.equal(notificationHref("ACTIVITY_REPLY", "tester"), "/")
-  assert.equal(notificationHref("ACTIVITY_LIKE", "tester"), "/")
+  assert.equal(notificationHref("ACTIVITY_REPLY", "tester"), "/feed")
+  assert.equal(notificationHref("ACTIVITY_LIKE", "tester"), "/feed")
 })
 test("notifications query uses server pagination/filter input and typed actor fields", () => {
   assert.match(MY_NOTIFICATIONS_QUERY, /myNotifications\s*\(input:\s*\$input\)/)

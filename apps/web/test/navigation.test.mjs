@@ -60,11 +60,12 @@ test("mobile header retains notifications and search, exposes seasonal/schedule 
   assert.match(source, /ANIME_MENU_LINKS\.map/)
   assert.doesNotMatch(source, /href="\/manga"|href="\/music"/)
 })
-test("/feed is a working route; AN-131 still owns homepage migration", () => {
+test("/feed is the only ActivityFeed page after AN-131", () => {
   const home = read("../src/app/page.tsx")
   const feed = read("../src/app/feed/page.tsx")
-  assert.match(home, /<ActivityFeed \/>/)
+  assert.doesNotMatch(home, /<ActivityFeed \/>/)
   assert.match(feed, /<ActivityFeed \/>/)
   assert.match(feed, /export default function FeedPage/)
   assert.match(feed, /Feed \| Anime Platform/)
+  assert.match(home, /export default function HomePage/)
 })

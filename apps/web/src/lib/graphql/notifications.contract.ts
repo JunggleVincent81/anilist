@@ -23,7 +23,7 @@ export function notificationMessage(kind: NotificationKind): string {
 }
 
 export function notificationHref(kind: NotificationKind, username: string): string {
-  return kind === "FOLLOW" ? `/user/${encodeURIComponent(username)}` : "/"
+  return kind === "FOLLOW" ? `/user/${encodeURIComponent(username)}` : "/feed"
 }
 
 export const MY_NOTIFICATIONS_QUERY = `
