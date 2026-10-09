@@ -3,8 +3,8 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  CalendarDaysIcon,
   CompassIcon,
+  UsersRoundIcon,
   HomeIcon,
   ListIcon,
   LogInIcon,
@@ -15,6 +15,7 @@ import {
   useAuth,
 } from "@/components/auth/auth-provider"
 import { cn } from "@/lib/utils"
+import { isPrimaryNavActive } from "@/lib/navigation/navigation-policy"
 
 function MobileNavigation() {
   const pathname = usePathname()
@@ -30,84 +31,30 @@ function MobileNavigation() {
 
   const navigation = [
     {
-      label: "Home",
-      href: "/",
-      icon: HomeIcon,
-
-      isActive: (
-        currentPathname: string,
-      ) =>
-        currentPathname === "/",
+      label: "Home", href: "/", icon: HomeIcon,
+      isActive: (path: string) => isPrimaryNavActive(path, "home"),
     },
     {
-      label: "Discover",
-      href: "/discover",
-      icon: CompassIcon,
-
-      isActive: (
-        currentPathname: string,
-      ) =>
-        currentPathname ===
-          "/discover" ||
-        currentPathname.startsWith(
-          "/discover/",
-        ),
+      label: "Anime", href: "/discover", icon: CompassIcon,
+      isActive: (path: string) => isPrimaryNavActive(path, "anime"),
+    },
+    {
+      label: "Feed", href: "/feed", icon: UsersRoundIcon,
+      isActive: (path: string) => isPrimaryNavActive(path, "feed"),
     },
     {
       label: "My List",
-
-      href: isAuthenticated
-        ? `/user/${user.username}/anime-list`
-        : "/login",
-
+      href: isAuthenticated ? `/user/${user.username}/anime-list` : "/login",
       icon: ListIcon,
-
-      isActive: (
-        currentPathname: string,
-      ) =>
-        isAuthenticated &&
-        currentPathname.endsWith(
-          "/anime-list",
-        ),
+      isActive: (path: string) => isAuthenticated && path.endsWith("/anime-list"),
     },
     {
-      label: "Seasonal",
-      href: "/season",
-      icon: CalendarDaysIcon,
-
-      isActive: (
-        currentPathname: string,
-      ) =>
-        currentPathname ===
-          "/season" ||
-        currentPathname.startsWith(
-          "/season/",
-        ),
-    },
-    {
-      label: isAuthenticated
-        ? "Profile"
-        : "Sign in",
-
-      href: isAuthenticated
-        ? `/user/${user.username}`
-        : "/login",
-
-      icon: isAuthenticated
-        ? UserIcon
-        : LogInIcon,
-
-      isActive: (
-        currentPathname: string,
-      ) =>
-        isAuthenticated
-          ? currentPathname ===
-              `/user/${user.username}`
-          : currentPathname ===
-              "/login",
+      label: isAuthenticated ? "Profile" : "Sign in",
+      href: isAuthenticated ? `/user/${user.username}` : "/login",
+      icon: isAuthenticated ? UserIcon : LogInIcon,
+      isActive: (path: string) => isAuthenticated ? path === `/user/${user.username}` : path === "/login",
     },
   ]
-
   return (
     <nav
       data-slot="mobile-navigation"

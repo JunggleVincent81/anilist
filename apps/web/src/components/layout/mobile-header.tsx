@@ -4,6 +4,7 @@ import { NotificationsBell } from "@/components/social/notifications-bell"
 
 import Link from "next/link"
 import {
+  MenuIcon,
   SearchIcon,
 } from "lucide-react"
 
@@ -18,6 +19,11 @@ import {
 } from "@/components/ui/tooltip"
 
 import { PageContainer } from "./page-container"
+import { ANIME_MENU_LINKS, FUTURE_CATEGORIES } from "@/lib/navigation/navigation-policy"
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuGroup,
+  DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 function MobileHeader() {
   const { user } = useAuth()
@@ -68,6 +74,36 @@ function MobileHeader() {
           </Tooltip>
 
           {user ? <NotificationsBell /> : null}
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  aria-label="Browse sections"
+                  className={buttonVariants({ variant: "ghost", size: "icon" })}
+                />
+              }
+            >
+              <MenuIcon aria-hidden="true" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" sideOffset={8} className="min-w-48">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Anime</DropdownMenuLabel>
+                {ANIME_MENU_LINKS.map((item) => (
+                  <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                    {item.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Future sections</DropdownMenuLabel>
+                {FUTURE_CATEGORIES.map((label) => (
+                  <DropdownMenuItem key={label} disabled>{label} (coming later)</DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </PageContainer>
     </header>

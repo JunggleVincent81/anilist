@@ -43,22 +43,9 @@ import {
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
+import { ANIME_MENU_LINKS, FUTURE_CATEGORIES, isPrimaryNavActive } from "@/lib/navigation/navigation-policy"
 import { PageContainer } from "./page-container"
 
-const navigation = [
-  {
-    label: "Discover",
-    href: "/discover",
-  },
-  {
-    label: "Seasonal",
-    href: "/season",
-  },
-  {
-    label: "Schedule",
-    href: "/schedule",
-  },
-]
 
 function DesktopHeader() {
   const pathname = usePathname()
@@ -117,46 +104,68 @@ function DesktopHeader() {
 
         <nav
           aria-label="Main navigation"
-          className="flex h-full items-center gap-1"
+          className="flex h-full items-center gap-0.5"
         >
-          {navigation.map((item) => {
-            const active =
-              pathname === item.href ||
-              pathname.startsWith(
-                `${item.href}/`,
-              )
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={
-                  active
-                    ? "page"
-                    : undefined
-                }
-                className={cn(
-                  "relative flex h-full items-center px-3 text-sm font-medium transition-colors outline-none",
-                  "focus-visible:ring-2 focus-visible:ring-ring/75",
-                  active
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {item.label}
-
-                <span
-                  aria-hidden="true"
+          <Link
+            href="/"
+            aria-current={isPrimaryNavActive(pathname, "home") ? "page" : undefined}
+            className={cn(
+              "relative flex h-full items-center px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/75",
+              isPrimaryNavActive(pathname, "home") ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Home
+            <span aria-hidden="true" className={cn("absolute inset-x-2.5 bottom-0 h-0.5 rounded-full bg-primary", isPrimaryNavActive(pathname, "home") ? "opacity-100" : "opacity-0")} />
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <button
+                  type="button"
+                  aria-label="Anime sections"
                   className={cn(
-                    "absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary transition-opacity",
-                    active
-                      ? "opacity-100"
-                      : "opacity-0",
+                    "relative flex h-full items-center gap-1 px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/75",
+                    isPrimaryNavActive(pathname, "anime") ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                   )}
                 />
-              </Link>
-            )
-          })}
+              }
+            >
+              Anime
+              <ChevronDownIcon aria-hidden="true" className="size-3.5" />
+              <span aria-hidden="true" className={cn("absolute inset-x-2.5 bottom-0 h-0.5 rounded-full bg-primary", isPrimaryNavActive(pathname, "anime") ? "opacity-100" : "opacity-0")} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" sideOffset={8} className="min-w-44">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Explore anime</DropdownMenuLabel>
+                {ANIME_MENU_LINKS.map((item) => (
+                  <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                    {item.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {FUTURE_CATEGORIES.map((label) => (
+            <span
+              key={label}
+              aria-disabled="true"
+              title={`${label} catalog is planned for a future phase`}
+              className="flex h-full cursor-not-allowed items-center px-2.5 text-sm font-medium text-muted-foreground/50"
+            >
+              {label}
+            </span>
+          ))}
+          <Link
+            href="/feed"
+            aria-current={isPrimaryNavActive(pathname, "feed") ? "page" : undefined}
+            className={cn(
+              "relative flex h-full items-center px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/75",
+              isPrimaryNavActive(pathname, "feed") ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Feed
+            <span aria-hidden="true" className={cn("absolute inset-x-2.5 bottom-0 h-0.5 rounded-full bg-primary", isPrimaryNavActive(pathname, "feed") ? "opacity-100" : "opacity-0")} />
+          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-1.5">
