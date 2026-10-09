@@ -142,6 +142,12 @@ enum ActivityVisibility {
 }
 
 model User {
+  catalogChangesCreated CatalogChangeRequest[] @relation("CatalogChangeCreator")
+  catalogEvidenceCreated CatalogEvidence[] @relation("CatalogEvidenceCreator")
+  catalogReviewsAuthored CatalogReviewDecision[] @relation("CatalogReviewActor")
+  catalogAssetsUploaded CatalogAsset[] @relation("CatalogAssetUploader")
+  catalogRevisionsAuthored CatalogRevision[] @relation("CatalogRevisionActor")
+
   id           String @id @default(uuid()) @db.Uuid
   email        String @unique @db.VarChar(320)
   username     String @unique @db.VarChar(24)
@@ -199,6 +205,11 @@ model Session {
 }
 
 model Anime {
+  catalogChangeRequests CatalogChangeRequest[]
+  catalogAssets CatalogAsset[]
+  catalogRevisions CatalogRevision[]
+  catalogProductionCountries CatalogProductionCountry[]
+
   id String @id @default(uuid()) @db.Uuid
 
   slug String @unique @db.VarChar(220)
@@ -703,4 +714,209 @@ model ContentReport {
   @@index([reporterId, createdAt, id])
   @@index([targetType, targetId])
   @@index([reviewerId])
+}
+
+// AN-140B: prepared private catalog-curation records. NO public mutation/resolver
+// is provided by this schema. Approval and publication are separate work items.
+enum CatalogChangeKind {
+  SYNOPSIS
+  METADATA
+  AGE
+  ORIGIN
+  ARTWORK
+}
+
+enum CatalogChangeState {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+enum CatalogEvidenceKind {
+  OFFICIAL_RATING
+  EDITORIAL_ANALYSIS
+  PRODUCTION_ORIGIN
+  SYNOPSIS_RIGHTS
+  IMAGE_LICENSE
+}
+
+enum CatalogReviewTrack {
+  OFFICIAL_RATING
+  EDITORIAL
+  ORIGIN
+  SYNOPSIS
+  ARTWORK
+}
+
+enum CatalogReviewAction {
+  REQUEST_CHANGES
+  APPROVE
+  REJECT
+  REVOKE
+}
+
+enum CatalogAssetKind {
+  COVER
+  BANNER
+}
+
+enum CatalogAssetState {
+  STAGED
+  QUARANTINED
+  APPROVED
+  REVOKED
+}
+
+enum CatalogDeliveryMode {
+  OWN_STORAGE
+  EXTERNAL_EMBED
+}
+
+enum CatalogRevisionAction {
+  PUBLISH
+  REVOKE
+  ROLLBACK
+}
+
+model CatalogChangeRequest {
+  id String @id @default(uuid()) @db.Uuid
+  animeId String @db.Uuid
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Restrict)
+  creatorId String @db.Uuid
+  creator User @relation("CatalogChangeCreator", fields: [creatorId], references: [id], onDelete: Restrict)
+  kind CatalogChangeKind
+  state CatalogChangeState @default(DRAFT)
+  baseAnimeUpdatedAt DateTime
+  revision Int @default(1)
+  proposedPatch Json
+  reason String? @db.VarChar(500)
+  submittedAt DateTime?
+  approvedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  evidence CatalogEvidence[]
+  decisions CatalogReviewDecision[]
+  assets CatalogAsset[]
+  revisions CatalogRevision[]
+  productionCountries CatalogProductionCountry[]
+
+  @@index([animeId, state, createdAt, id])
+  @@index([state, createdAt, id])
+  @@index([creatorId, createdAt, id])
+}
+
+model CatalogEvidence {
+  id String @id @default(uuid()) @db.Uuid
+  changeRequestId String @db.Uuid
+  changeRequest CatalogChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Restrict)
+  createdById String @db.Uuid
+  createdBy User @relation("CatalogEvidenceCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  kind CatalogEvidenceKind
+  sourceUrl String @db.Text
+  publisher String? @db.VarChar(191)
+  captureDate DateTime? @db.Date
+  exactReleaseLabel String? @db.VarChar(255)
+  authority String? @db.VarChar(191)
+  jurisdiction String? @db.VarChar(80)
+  classificationScheme String? @db.VarChar(100)
+  licenseType String? @db.VarChar(100)
+  licenseTerms String? @db.Text
+  attribution String? @db.Text
+  notes String? @db.Text
+  createdAt DateTime @default(now())
+  licensedAssets CatalogAsset[]
+  supportedCountries CatalogProductionCountry[]
+
+  @@index([changeRequestId, createdAt, id])
+  @@index([createdById, createdAt, id])
+  @@index([kind, createdAt, id])
+}
+
+model CatalogReviewDecision {
+  id String @id @default(uuid()) @db.Uuid
+  changeRequestId String @db.Uuid
+  changeRequest CatalogChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Restrict)
+  actorId String @db.Uuid
+  actor User @relation("CatalogReviewActor", fields: [actorId], references: [id], onDelete: Restrict)
+  reviewTrack CatalogReviewTrack
+  action CatalogReviewAction
+  draftRevision Int
+  decisionNote String? @db.Text
+  policyVersion String @db.VarChar(60)
+  createdAt DateTime @default(now())
+
+  @@unique([changeRequestId, actorId, reviewTrack, draftRevision])
+  @@index([changeRequestId, createdAt, id])
+  @@index([actorId, createdAt, id])
+}
+
+model CatalogAsset {
+  id String @id @default(uuid()) @db.Uuid
+  animeId String @db.Uuid
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Restrict)
+  changeRequestId String @db.Uuid
+  changeRequest CatalogChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Restrict)
+  uploaderId String @db.Uuid
+  uploader User @relation("CatalogAssetUploader", fields: [uploaderId], references: [id], onDelete: Restrict)
+  licenseEvidenceId String? @db.Uuid
+  licenseEvidence CatalogEvidence? @relation(fields: [licenseEvidenceId], references: [id], onDelete: Restrict)
+  kind CatalogAssetKind
+  state CatalogAssetState @default(STAGED)
+  storageKey String? @unique @db.VarChar(512)
+  sha256 String? @db.Char(64)
+  mime String? @db.VarChar(120)
+  byteLength BigInt?
+  width Int?
+  height Int?
+  sourceCopyrightOwner String? @db.VarChar(255)
+  allowedDeliveryMode CatalogDeliveryMode?
+  licenseExpiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([animeId, state, createdAt, id])
+  @@index([changeRequestId, createdAt, id])
+  @@index([licenseEvidenceId])
+  @@index([state, licenseExpiresAt])
+}
+
+model CatalogRevision {
+  id String @id @default(uuid()) @db.Uuid
+  animeId String @db.Uuid
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Restrict)
+  changeRequestId String @db.Uuid
+  changeRequest CatalogChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Restrict)
+  actorId String @db.Uuid
+  actor User @relation("CatalogRevisionActor", fields: [actorId], references: [id], onDelete: Restrict)
+  action CatalogRevisionAction
+  fieldMask Json
+  beforeSnapshot Json
+  afterSnapshot Json
+  policyVersion String @db.VarChar(60)
+  reason String? @db.VarChar(500)
+  createdAt DateTime @default(now())
+
+  @@index([animeId, createdAt, id])
+  @@index([changeRequestId, createdAt, id])
+  @@index([actorId, createdAt, id])
+}
+
+// These are proposed provenance-linked countries, NOT published origin facts.
+model CatalogProductionCountry {
+  id String @id @default(uuid()) @db.Uuid
+  animeId String @db.Uuid
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Restrict)
+  changeRequestId String @db.Uuid
+  changeRequest CatalogChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Restrict)
+  evidenceId String? @db.Uuid
+  evidence CatalogEvidence? @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+  countryCode String @db.Char(2)
+  createdAt DateTime @default(now())
+
+  @@unique([changeRequestId, countryCode])
+  @@index([animeId, countryCode])
+  @@index([evidenceId])
 }
