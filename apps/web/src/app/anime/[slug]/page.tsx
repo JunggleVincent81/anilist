@@ -22,6 +22,7 @@ import {
 import {
   AnimeRelations,
 } from "@/components/anime/anime-relations"
+import { AnimeReviews } from "@/components/anime/anime-reviews"
 
 import {
   ContentSection,
@@ -251,6 +252,8 @@ export default async function AnimePage({
                   anime.relations
                 }
               />
+
+              <AnimeReviews animeId={anime.id} animeTitle={anime.title} />
             </div>
 
             <aside
