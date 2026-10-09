@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/tooltip"
 
 import { PageContainer } from "./page-container"
-import { ANIME_MENU_LINKS, FUTURE_CATEGORIES } from "@/lib/navigation/navigation-policy"
+import { ANIME_MENU_LINKS, CATALOG_MENU_LINKS } from "@/lib/navigation/navigation-policy"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup,
   DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
@@ -97,9 +97,11 @@ function MobileHeader() {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuLabel>Future sections</DropdownMenuLabel>
-                {FUTURE_CATEGORIES.map((label) => (
-                  <DropdownMenuItem key={label} disabled>{label} (coming later)</DropdownMenuItem>
+                <DropdownMenuLabel>Manga & Music</DropdownMenuLabel>
+                {CATALOG_MENU_LINKS.map((item) => (
+                  <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                    {item.label}
+                  </DropdownMenuItem>
                 ))}
               </DropdownMenuGroup>
             </DropdownMenuContent>

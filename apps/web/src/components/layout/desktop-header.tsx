@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
-import { ANIME_MENU_LINKS, FUTURE_CATEGORIES, isPrimaryNavActive } from "@/lib/navigation/navigation-policy"
+import { ANIME_MENU_LINKS, CATALOG_MENU_LINKS, isPrimaryNavActive } from "@/lib/navigation/navigation-policy"
 import { PageContainer } from "./page-container"
 
 
@@ -145,15 +145,19 @@ function DesktopHeader() {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          {FUTURE_CATEGORIES.map((label) => (
-            <span
-              key={label}
-              aria-disabled="true"
-              title={`${label} catalog is planned for a future phase`}
-              className="flex h-full cursor-not-allowed items-center px-2.5 text-sm font-medium text-muted-foreground/50"
+          {CATALOG_MENU_LINKS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isPrimaryNavActive(pathname, item.label === "Manga" ? "manga" : "music") ? "page" : undefined}
+              className={cn(
+                "relative flex h-full items-center px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/75",
+                isPrimaryNavActive(pathname, item.label === "Manga" ? "manga" : "music") ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
             >
-              {label}
-            </span>
+              {item.label}
+              <span aria-hidden="true" className={cn("absolute inset-x-2.5 bottom-0 h-0.5 rounded-full bg-primary", isPrimaryNavActive(pathname, item.label === "Manga" ? "manga" : "music") ? "opacity-100" : "opacity-0")} />
+            </Link>
           ))}
           <Link
             href="/feed"

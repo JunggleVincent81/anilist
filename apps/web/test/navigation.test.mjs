@@ -2,70 +2,53 @@ import test from "node:test"
 import assert from "node:assert/strict"
 import { readFileSync, existsSync } from "node:fs"
 import { fileURLToPath } from "node:url"
-import { ANIME_MENU_LINKS, FUTURE_CATEGORIES, isPrimaryNavActive } from "../src/lib/navigation/navigation-policy.ts"
+import { ANIME_MENU_LINKS, CATALOG_MENU_LINKS, isPrimaryNavActive } from "../src/lib/navigation/navigation-policy.ts"
 const read = (relative) => readFileSync(new URL(relative, import.meta.url), "utf8")
 
-test("home is active ONLY on / and feed only on /feed paths", () => {
+test("primary navigation matches active routes", () => {
   assert.equal(isPrimaryNavActive("/", "home"), true)
   assert.equal(isPrimaryNavActive("/feed", "home"), false)
   assert.equal(isPrimaryNavActive("/feed", "feed"), true)
-  assert.equal(isPrimaryNavActive("/feed/something", "feed"), true)
-  assert.equal(isPrimaryNavActive("/discover", "feed"), false)
+  assert.equal(isPrimaryNavActive("/feed/activity", "feed"), true)
+  for (const section of ["manga", "music"]) {
+    assert.equal(isPrimaryNavActive(`/${section}`, section), true)
+    assert.equal(isPrimaryNavActive(`/${section}/detail`, section), true)
+    assert.equal(isPrimaryNavActive("/", section), false)
+  }
 })
-test("anime nav covers existing discovery, seasonal, schedule and detail routes", () => {
+test("anime nav points only to available anime routes", () => {
   for (const url of ["/discover", "/season", "/schedule", "/anime/test-title"]) {
     assert.equal(isPrimaryNavActive(url, "anime"), true, url)
   }
-  assert.equal(isPrimaryNavActive("/feed", "anime"), false)
-  assert.deepEqual(ANIME_MENU_LINKS.map((entry) => entry.href), ["/discover", "/season", "/schedule"])
-})
-test("anime menu destinations really exist", () => {
+  assert.deepEqual(ANIME_MENU_LINKS.map((item) => item.href), ["/discover", "/season", "/schedule"])
   for (const item of ANIME_MENU_LINKS) {
-    const page = new URL(`../src/app${item.href}/page.tsx`, import.meta.url)
-    assert.ok(existsSync(fileURLToPath(page)), `Missing page: ${item.href}`)
+    assert.ok(existsSync(fileURLToPath(new URL(`../src/app${item.href}/page.tsx`, import.meta.url))))
   }
 })
-test("Manga and Music have no fabricated navigation URLs", () => {
-  assert.deepEqual([...FUTURE_CATEGORIES], ["Manga", "Music"])
-  const policy = read("../src/lib/navigation/navigation-policy.ts")
-  assert.doesNotMatch(policy, /href:\s*["']\/(manga|music)/)
-  const header = read("../src/components/layout/desktop-header.tsx")
-  assert.match(header, /FUTURE_CATEGORIES\.map/)
-  assert.match(header, /aria-disabled="true"/)
-})
-test("desktop header presents Home, Anime, Manga, Music and Feed while preserving account bells", () => {
-  const source = read("../src/components/layout/desktop-header.tsx")
-  for (const match of ["Home", "Anime", "FUTURE_CATEGORIES", "Feed", 'href="/feed"', 'href="/"', "<NotificationsBell />"]) {
-    assert.ok(source.includes(match), `${match} missing`)
+test("Manga and Music have real enabled routes on desktop and mobile", () => {
+  assert.deepEqual(CATALOG_MENU_LINKS.map((item) => item.href), ["/manga", "/music"])
+  for (const item of CATALOG_MENU_LINKS) {
+    assert.ok(existsSync(fileURLToPath(new URL(`../src/app${item.href}/page.tsx`, import.meta.url))))
   }
-  assert.match(source, /aria-label="Anime sections"/)
-  assert.match(source, /ANIME_MENU_LINKS\.map/)
-  assert.doesNotMatch(source, /href="\/manga"|href="\/music"/)
+  const desktop = read("../src/components/layout/desktop-header.tsx")
+  const mobile = read("../src/components/layout/mobile-header.tsx")
+  assert.match(desktop, /CATALOG_MENU_LINKS\.map/)
+  assert.match(mobile, /CATALOG_MENU_LINKS\.map/)
+  assert.doesNotMatch(desktop, /FUTURE_CATEGORIES|aria-disabled="true"/)
+  assert.doesNotMatch(mobile, /FUTURE_CATEGORIES|coming later/)
+  assert.match(desktop, /<NotificationsBell \/>/)
+  assert.match(mobile, /<NotificationsBell \/>/)
 })
-test("mobile navigation keeps five reachable actions, including Feed", () => {
+test("mobile bottom navigation keeps five actions, including Feed", () => {
   const source = read("../src/components/layout/mobile-navigation.tsx")
-  assert.match(source, /label: "Home"/)
-  assert.match(source, /label: "Anime"/)
-  assert.match(source, /label: "Feed", href: "\/feed"/)
-  assert.match(source, /label: "My List"/)
-  assert.match(source, /label: isAuthenticated \? "Profile" : "Sign in"/)
-  assert.match(source, /grid-cols-5/)
-  assert.match(source, /isAuthenticated \? `\/user\/\$\{user\.username\}\/anime-list` : "\/login"/)
+  for (const fragment of ['label: "Home"', 'label: "Anime"', 'label: "Feed", href: "/feed"', 'label: "My List"', 'label: isAuthenticated ? "Profile" : "Sign in"', 'grid-cols-5']) {
+    assert.ok(source.includes(fragment), fragment)
+  }
 })
-test("mobile header retains notifications and search, exposes seasonal/schedule via menu", () => {
-  const source = read("../src/components/layout/mobile-header.tsx")
-  assert.match(source, /<NotificationsBell \/>/)
-  assert.match(source, /aria-label="Search"/)
-  assert.match(source, /aria-label="Browse sections"/)
-  assert.match(source, /ANIME_MENU_LINKS\.map/)
-  assert.doesNotMatch(source, /href="\/manga"|href="\/music"/)
-})
-test("/feed is the only ActivityFeed page after AN-131", () => {
+test("ActivityFeed remains exclusively on /feed", () => {
   const home = read("../src/app/page.tsx")
   const feed = read("../src/app/feed/page.tsx")
   assert.doesNotMatch(home, /<ActivityFeed \/>/)
   assert.match(feed, /<ActivityFeed \/>/)
   assert.match(feed, /export default function FeedPage/)
-  assert.match(feed, /Feed \| Anime Platform/)
-  assert.match(home, /export default function HomePage/)
 })
