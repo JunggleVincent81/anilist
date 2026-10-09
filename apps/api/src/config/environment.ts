@@ -49,7 +49,7 @@ export function loadEnvironment():
   return {
     nodeEnv,
     apiPort:
-      port('API_PORT', 4000),
+      port('API_PORT', port('PORT', 4000)),
 
     webUrl:
       process.env.WEB_URL ??

@@ -1,0 +1,61 @@
+name: Quality and release gates
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: anilist_ci
+          POSTGRES_PASSWORD: ci_password_not_prod
+          POSTGRES_DB: anime_platform_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U anilist_ci -d anime_platform_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://anilist_ci:ci_password_not_prod@127.0.0.1:5432/anime_platform_ci?schema=public
+      WEB_URL: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      API_PORT: 4000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.9.1
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Validate and generate Prisma Client
+        run: |
+          pnpm --filter @anime-platform/api exec prisma validate
+          pnpm --filter @anime-platform/api exec prisma generate
+      - name: Apply migrations to isolated CI database
+        run: pnpm --filter @anime-platform/api exec prisma migrate deploy
+      - name: API regression and static checks
+        run: |
+          pnpm --filter @anime-platform/api test
+          pnpm --filter @anime-platform/api typecheck
+          pnpm --filter @anime-platform/api lint
+          pnpm --filter @anime-platform/api build
+      - name: Production-mode API smoke on isolated CI database
+        run: python3 scripts/verify-production-runtime.py
+      - name: Frontend regression and build
+        run: |
+          pnpm --filter @anime-platform/web test
+          pnpm --filter @anime-platform/web typecheck
+          pnpm --filter @anime-platform/web lint
+          pnpm --filter @anime-platform/web build

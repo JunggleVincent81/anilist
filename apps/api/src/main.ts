@@ -7,10 +7,12 @@ import type { NextFunction, Request, Response } from 'express';
 
 import { AppModule } from './app.module.js';
 import { loadEnvironment } from './config/environment.js';
+import { assertProductionEnvironment } from './config/production-readiness.js';
 
 async function bootstrap() {
   const environment =
     loadEnvironment();
+  assertProductionEnvironment(environment);
 
   const app =
     await NestFactory.create<NestExpressApplication>(
