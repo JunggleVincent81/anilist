@@ -22,7 +22,7 @@ export class AdminSynopsisDraftType {
   @Field(() => ID) animeId!: string;
   @Field(() => Int) revision!: number;
   @Field() synopsis!: string;
-  @Field({ nullable: true }) reason!: string | null;
+  @Field(() => String, { nullable: true }) reason!: string | null;
   @Field() createdAt!: Date;
   @Field() updatedAt!: Date;
 }

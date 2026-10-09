@@ -8,9 +8,9 @@ export class AdminSynopsisQueueItem {
   @Field(() => Int) revision!: number;
   @Field() state!: string;
   @Field() synopsis!: string;
-  @Field({ nullable: true }) reason!: string | null;
+  @Field(() => String, { nullable: true }) reason!: string | null;
   @Field() createdAt!: Date;
-  @Field({ nullable: true }) submittedAt!: Date | null;
+  @Field(() => Date, { nullable: true }) submittedAt!: Date | null;
 }
 
 @ObjectType()
