@@ -5,5 +5,6 @@ export class CommunityRankedAnimeType {
   @Field() slug!: string;
   @Field() title!: string;
   @Field(() => Float) averageScore!: number;
+  @Field(() => Float) weightedScore!: number;
   @Field(() => Int) scoredReviewCount!: number;
 }
