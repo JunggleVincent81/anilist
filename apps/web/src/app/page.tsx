@@ -7,6 +7,7 @@ import { PageContainer } from "@/components/layout/page-container"
 import { FeaturedAnimeSpotlight } from "@/components/home/featured-anime-spotlight"
 import { HomeSeasonAndAiring } from "@/components/home/home-season-airing"
 import { HomeCommunityPulseAndReviews } from "@/components/home/home-community-pulse-and-reviews"
+import { HomeCommunityRanking } from "@/components/home/home-community-ranking"
 import { HomeSectionLoading } from "@/components/home/home-section-loading"
 
 // Prevent build-time static prerendering of the live GraphQL spotlight.
@@ -78,6 +79,7 @@ export default function HomePage() {
               </div>
             </section>
 
+            <Suspense fallback={<HomeSectionLoading label="Community ranking" variant="grid" />}><HomeCommunityRanking /></Suspense>
             <Suspense fallback={<HomeSectionLoading label="Community updates and reviews" variant="grid" />}>
               <HomeCommunityPulseAndReviews />
             </Suspense>

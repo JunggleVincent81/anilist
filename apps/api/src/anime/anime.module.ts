@@ -22,6 +22,9 @@ import {
   AnimeService,
 } from './anime.service.js';
 
+import { AnimeCommunityRankingService } from './anime-community-ranking.service.js';
+import { AnimeCommunityRankingResolver } from './anime-community-ranking.resolver.js';
+
 @Module({
   imports: [
     DatabaseModule,
@@ -33,6 +36,8 @@ import {
 
     AnimeDiscoveryService,
     AnimeDiscoveryResolver,
+    AnimeCommunityRankingService,
+    AnimeCommunityRankingResolver,
   ],
 
   exports: [
