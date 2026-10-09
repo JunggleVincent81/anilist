@@ -3,6 +3,10 @@ import Link from "next/link"
 import { ArrowUpRight, CalendarDays, Compass, MessagesSquare, Sparkles } from "lucide-react"
 import { ContentSection } from "@/components/layout/content-section"
 import { PageContainer } from "@/components/layout/page-container"
+import { FeaturedAnimeSpotlight } from "@/components/home/featured-anime-spotlight"
+
+// Prevent build-time static prerendering of the live GraphQL spotlight.
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Home | Anime Platform",
@@ -39,35 +43,7 @@ export default function HomePage() {
       <PageContainer>
         <ContentSection spacing="lg">
           <div className="mx-auto w-full max-w-6xl space-y-9 pb-16 sm:space-y-12">
-            <section
-              aria-labelledby="home-intro-title"
-              className="rounded-2xl border border-border bg-surface px-5 py-8 sm:px-8 sm:py-10"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                Anime discovery & community
-              </p>
-              <h1 id="home-intro-title" className="mt-3 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
-                Discover anime. Connect with fans.
-              </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                Find anime to explore, check what is airing, and share the stories you love
-                with the community. Everything begins with the titles and people you care about.
-              </p>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Link
-                  href="/discover"
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  Explore anime <ArrowUpRight aria-hidden="true" className="size-4" />
-                </Link>
-                <Link
-                  href="/feed"
-                  className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  Community feed <ArrowUpRight aria-hidden="true" className="size-4" />
-                </Link>
-              </div>
-            </section>
+            <FeaturedAnimeSpotlight />
 
             <section aria-labelledby="anime-paths-title">
               <div className="mb-5">
