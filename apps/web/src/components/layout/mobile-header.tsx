@@ -1,8 +1,9 @@
 "use client"
 
+import { NotificationsBell } from "@/components/social/notifications-bell"
+
 import Link from "next/link"
 import {
-  BellIcon,
   SearchIcon,
 } from "lucide-react"
 
@@ -66,34 +67,7 @@ function MobileHeader() {
             </TooltipContent>
           </Tooltip>
 
-          {user ? (
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <button
-                    type="button"
-                    aria-label="Notifications"
-                    className={buttonVariants({
-                      variant: "ghost",
-                      size: "icon",
-                      className: "relative",
-                    })}
-                  />
-                }
-              >
-                <BellIcon />
-
-                <span
-                  aria-hidden="true"
-                  className="absolute top-2 right-2 size-1.5 rounded-full bg-primary ring-2 ring-background"
-                />
-              </TooltipTrigger>
-
-              <TooltipContent>
-                Notifications
-              </TooltipContent>
-            </Tooltip>
-          ) : null}
+          {user ? <NotificationsBell /> : null}
         </div>
       </PageContainer>
     </header>
