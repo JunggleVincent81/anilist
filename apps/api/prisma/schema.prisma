@@ -205,6 +205,7 @@ model Session {
 }
 
 model Anime {
+  musicTracks AnimeMusicTrack[]
   catalogChangeRequests CatalogChangeRequest[]
   catalogAssets CatalogAsset[]
   catalogRevisions CatalogRevision[]
@@ -919,4 +920,47 @@ model CatalogProductionCountry {
   @@unique([changeRequestId, countryCode])
   @@index([animeId, countryCode])
   @@index([evidenceId])
+}
+
+// AN-136: Independent first-party manga catalogue; nothing auto-imported or public by default.
+model MangaWork {
+  id String @id @default(uuid()) @db.Uuid
+  slug String @unique @db.VarChar(220)
+  title String @db.VarChar(500)
+  synopsis String? @db.Text
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  isAdult Boolean?
+  isPublished Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished, isAdult, title])
+}
+
+// AN-136: songs are not Anime(format=MUSIC) and cannot imply streaming rights.
+model AnimeMusicTrack {
+  id String @id @default(uuid()) @db.Uuid
+  slug String @unique @db.VarChar(220)
+  title String @db.VarChar(500)
+  artistName String @db.VarChar(250)
+  category AnimeMusicCategory
+  animeId String? @db.Uuid
+  anime Anime? @relation(fields: [animeId], references: [id], onDelete: Restrict)
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  isPublished Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished, category, title])
+  @@index([animeId])
+}
+
+enum AnimeMusicCategory {
+  OPENING
+  ENDING
+  SOUNDTRACK
+  INSERT_SONG
+  OTHER
 }

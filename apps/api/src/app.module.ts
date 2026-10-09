@@ -61,6 +61,7 @@ import {
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { ModerationModule } from './moderation/moderation.module.js';
 import { AdminCatalogModule } from './admin-catalog/admin-catalog.module.js';
+import { MangaMusicModule } from './manga-music/manga-music.module.js';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { AdminCatalogModule } from './admin-catalog/admin-catalog.module.js';
     NotificationsModule,
     ModerationModule,
     AdminCatalogModule,
+    MangaMusicModule,
     AnimeModule,
     AiringScheduleModule,
     AnimeTrackingModule,
