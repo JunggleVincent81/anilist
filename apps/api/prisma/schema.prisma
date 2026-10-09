@@ -172,6 +172,8 @@ model User {
   animeReviews          AnimeReview[]
   notificationsReceived Notification[]  @relation("NotificationRecipient")
   notificationsSent     Notification[]  @relation("NotificationActor")
+  submittedReports      ContentReport[] @relation("ReportSubmitter")
+  moderatedReports      ContentReport[] @relation("ReportReviewer")
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt
 
@@ -655,4 +657,50 @@ model Notification {
   @@index([recipientId, isRead, createdAt, id])
   @@index([recipientId, createdAt, id])
   @@index([targetActivityId])
+}
+
+// AN-124: User-initiated reporting and auditable moderator triage.
+// Polymorphic target ids are validated at submission; deleted targets may leave reports.
+enum ReportTargetType {
+  ACTIVITY
+  REVIEW
+  USER
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  HATE_SPEECH
+  SEXUAL_CONTENT
+  VIOLENCE
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+model ContentReport {
+  id            String           @id @default(uuid()) @db.Uuid
+  reporterId    String           @db.Uuid
+  reporter      User             @relation("ReportSubmitter", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType    ReportTargetType
+  targetId      String           @db.Uuid
+  reason        ReportReason
+  details       String?          @db.VarChar(500)
+  status        ReportStatus     @default(OPEN)
+  reviewerId    String?          @db.Uuid
+  reviewer      User?            @relation("ReportReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  moderatorNote String?          @db.VarChar(500)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  reviewedAt    DateTime?
+
+  @@unique([reporterId, targetType, targetId])
+  @@index([status, createdAt, id])
+  @@index([reporterId, createdAt, id])
+  @@index([targetType, targetId])
+  @@index([reviewerId])
 }

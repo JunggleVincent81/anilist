@@ -59,6 +59,7 @@ import {
 } from './users/users.module.js';
 
 import { NotificationsModule } from './notifications/notifications.module.js';
+import { ModerationModule } from './moderation/moderation.module.js';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { NotificationsModule } from './notifications/notifications.module.js';
     ActivitiesModule,
     ReviewsModule,
     NotificationsModule,
+    ModerationModule,
     AnimeModule,
     AiringScheduleModule,
     AnimeTrackingModule,
