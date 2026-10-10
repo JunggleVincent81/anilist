@@ -205,6 +205,7 @@ model Session {
 }
 
 model Anime {
+  episodeRecords AnimeEpisode[]
   musicTracks AnimeMusicTrack[]
   catalogChangeRequests CatalogChangeRequest[]
   catalogAssets CatalogAsset[]
@@ -275,6 +276,34 @@ model Anime {
   @@index([seasonYear, season])
   @@index([startDate])
   @@index([catalogStatus])
+}
+
+enum AnimeEpisodeType {
+  REGULAR
+  SPECIAL
+  OTHER
+}
+
+model AnimeEpisode {
+  id String @id @default(uuid()) @db.Uuid
+
+  animeId String @db.Uuid
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Restrict)
+
+  episodeKey String @db.VarChar(180)
+  episodeType AnimeEpisodeType @default(REGULAR)
+  number Int?
+
+  title String? @db.VarChar(500)
+  durationMinutes Int?
+  airDate DateTime? @db.Date
+  sourceReference String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([animeId, episodeKey])
+  @@index([animeId, episodeType, number])
 }
 
 model AnimeTitle {
