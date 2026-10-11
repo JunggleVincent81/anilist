@@ -16,6 +16,8 @@ import { AdminDomainPageInput, AdminDomainRecordPageType } from './admin-domain-
 import { AdminStructuredCandidatesService } from './admin-structured-candidates.service.js';
 import { AdminRelationManagerService } from './admin-relation-manager.service.js';
 import { AdminMediaEvidenceService } from './admin-media-evidence.service.js';
+import { AdminEditorialReviewService } from './admin-editorial-review.service.js';
+import { AdminEditorialPageInput, AdminEditorialCasePageType, AdminEditorialCaseItemType, AdminEditorialCaseDetailType, CreateAdminEditorialCaseInput, TransitionAdminEditorialCaseInput } from './admin-editorial-review.graphql.js';
 import { AdminMediaEvidencePageInput, AdminSourceDossierPageType, AdminMediaIntakePageType, AdminSourceDossierType, AdminMediaIntakeType, CreateAdminSourceDossierInput, CreateAdminMediaIntakeInput } from './admin-media-evidence.graphql.js';
 import { AdminRelationPageInput, AdminRelationProposalPageType, AdminRelationProposalType, AdminRelationCanonicalPageType, CreateAdminRelationProposalInput } from './admin-relation-manager.graphql.js';
 import { AdminStructuredCandidatePageInput, AdminStructuredCandidatePageType, AdminStructuredCandidateType, CreateAdminStructuredCandidateInput, UpdateAdminStructuredCandidateInput } from './admin-structured-candidates.graphql.js';
@@ -28,7 +30,7 @@ import { AdminSynopsisDraftType, CreateAdminSynopsisDraftInput, UpdateAdminSynop
 
 @Resolver()
 export class AdminCatalogResolver {
-  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService, private readonly structuredCandidates: AdminStructuredCandidatesService, private readonly relations: AdminRelationManagerService, private readonly mediaEvidence: AdminMediaEvidenceService) {}
+  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService, private readonly structuredCandidates: AdminStructuredCandidatesService, private readonly relations: AdminRelationManagerService, private readonly mediaEvidence: AdminMediaEvidenceService, private readonly editorialReview: AdminEditorialReviewService) {}
 
   @Query(() => AdminWorkspaceOverviewType)
   @UseGuards(RolesGuard)
@@ -154,6 +156,38 @@ export class AdminCatalogResolver {
   createAdminMediaIntake(@Args('input') input: CreateAdminMediaIntakeInput,
     @Context() context: GraphQLAuthContext): Promise<AdminMediaIntakeType> {
     return this.mediaEvidence.addMedia(context.currentUser!.id, input);
+  }
+
+  @Query(() => AdminEditorialCasePageType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminEditorialCases(@Args('input', { type: () => AdminEditorialPageInput, nullable: true }) input: AdminEditorialPageInput | undefined,
+    @Context() context: GraphQLAuthContext): Promise<AdminEditorialCasePageType> {
+    return this.editorialReview.page(context.currentUser!.id, input);
+  }
+
+  @Query(() => AdminEditorialCaseDetailType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminEditorialCaseDetail(@Args('id', {type: () => ID}) id: string,
+    @Context() context: GraphQLAuthContext): Promise<AdminEditorialCaseDetailType> {
+    return this.editorialReview.detail(context.currentUser!.id, id);
+  }
+
+  @Mutation(() => AdminEditorialCaseItemType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  createAdminEditorialCase(@Args('input') input: CreateAdminEditorialCaseInput,
+    @Context() context: GraphQLAuthContext): Promise<AdminEditorialCaseItemType> {
+    return this.editorialReview.create(context.currentUser!.id, input);
+  }
+
+  @Mutation(() => AdminEditorialCaseItemType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  transitionAdminEditorialCase(@Args('input') input: TransitionAdminEditorialCaseInput,
+    @Context() context: GraphQLAuthContext): Promise<AdminEditorialCaseItemType> {
+    return this.editorialReview.transition(context.currentUser!.id, input);
   }
 
   @Query(() => AdminCatalogOverviewType)
