@@ -57,6 +57,7 @@ export function AdminDomainManager({kind}:{kind:'MANGA'|'MUSIC'}) {
         <Link href="/admin/catalog/manga" className="text-primary underline">Manga Manager</Link>
         <Link href="/admin/catalog/music" className="text-primary underline">Music Manager</Link>
         <Link href="/admin/catalog/anime" className="text-primary underline">Anime Manager</Link>
+        <Link href="/admin/catalog/editor" className="text-primary underline">Quick Add &amp; Full Editors</Link>
       </nav>
     </header>
     <section className={panel} aria-label={`${kind} canonical records`}>
