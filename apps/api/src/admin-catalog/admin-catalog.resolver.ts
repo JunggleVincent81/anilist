@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Int } from '@nestjs/graphql';
+import { ID, Int } from '@nestjs/graphql';
 import { AdminSynopsisQueueService } from './admin-synopsis-queue.service.js';
 import { AdminSynopsisQueuePage } from './admin-synopsis-queue.graphql.js';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
@@ -15,6 +15,8 @@ import { AdminDomainRecordsService } from './admin-domain-records.service.js';
 import { AdminDomainPageInput, AdminDomainRecordPageType } from './admin-domain-records.graphql.js';
 import { AdminStructuredCandidatesService } from './admin-structured-candidates.service.js';
 import { AdminRelationManagerService } from './admin-relation-manager.service.js';
+import { AdminMediaEvidenceService } from './admin-media-evidence.service.js';
+import { AdminMediaEvidencePageInput, AdminSourceDossierPageType, AdminMediaIntakePageType, AdminSourceDossierType, AdminMediaIntakeType, CreateAdminSourceDossierInput, CreateAdminMediaIntakeInput } from './admin-media-evidence.graphql.js';
 import { AdminRelationPageInput, AdminRelationProposalPageType, AdminRelationProposalType, AdminRelationCanonicalPageType, CreateAdminRelationProposalInput } from './admin-relation-manager.graphql.js';
 import { AdminStructuredCandidatePageInput, AdminStructuredCandidatePageType, AdminStructuredCandidateType, CreateAdminStructuredCandidateInput, UpdateAdminStructuredCandidateInput } from './admin-structured-candidates.graphql.js';
 import { AdminAnimeCandidatePageInput, AdminAnimeCandidatePageType, AdminAnimeCandidateType, CreateAdminAnimeCandidateInput, UpdateAdminAnimeCandidateInput } from './admin-anime-candidates.graphql.js';
@@ -26,7 +28,7 @@ import { AdminSynopsisDraftType, CreateAdminSynopsisDraftInput, UpdateAdminSynop
 
 @Resolver()
 export class AdminCatalogResolver {
-  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService, private readonly structuredCandidates: AdminStructuredCandidatesService, private readonly relations: AdminRelationManagerService) {}
+  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService, private readonly structuredCandidates: AdminStructuredCandidatesService, private readonly relations: AdminRelationManagerService, private readonly mediaEvidence: AdminMediaEvidenceService) {}
 
   @Query(() => AdminWorkspaceOverviewType)
   @UseGuards(RolesGuard)
@@ -112,6 +114,46 @@ export class AdminCatalogResolver {
   createAdminRelationProposal(@Args('input') input: CreateAdminRelationProposalInput,
     @Context() context: GraphQLAuthContext): Promise<AdminRelationProposalType> {
     return this.relations.create(context.currentUser!.id, input);
+  }
+
+  @Query(() => AdminSourceDossierPageType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminSourceDossiers(@Args('input', { type: () => AdminMediaEvidencePageInput, nullable: true }) input: AdminMediaEvidencePageInput | undefined,
+    @Context() context: GraphQLAuthContext): Promise<AdminSourceDossierPageType> {
+    return this.mediaEvidence.sources(context.currentUser!.id, input);
+  }
+
+  @Query(() => AdminMediaIntakePageType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminMediaIntakes(@Args('input', { type: () => AdminMediaEvidencePageInput, nullable: true }) input: AdminMediaEvidencePageInput | undefined,
+    @Context() context: GraphQLAuthContext): Promise<AdminMediaIntakePageType> {
+    return this.mediaEvidence.media(context.currentUser!.id, input);
+  }
+
+  @Mutation(() => AdminSourceDossierType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  createAdminSourceDossier(@Args('input') input: CreateAdminSourceDossierInput,
+    @Context() context: GraphQLAuthContext): Promise<AdminSourceDossierType> {
+    return this.mediaEvidence.addSource(context.currentUser!.id, input);
+  }
+
+  @Mutation(() => AdminSourceDossierType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  revokeAdminSourceDossier(@Args('id', { type: () => ID }) id: string,
+    @Context() context: GraphQLAuthContext): Promise<AdminSourceDossierType> {
+    return this.mediaEvidence.revokeSource(context.currentUser!.id, id);
+  }
+
+  @Mutation(() => AdminMediaIntakeType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  createAdminMediaIntake(@Args('input') input: CreateAdminMediaIntakeInput,
+    @Context() context: GraphQLAuthContext): Promise<AdminMediaIntakeType> {
+    return this.mediaEvidence.addMedia(context.currentUser!.id, input);
   }
 
   @Query(() => AdminCatalogOverviewType)

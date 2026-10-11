@@ -152,6 +152,8 @@ model User {
   catalogAssetsUploaded CatalogAsset[] @relation("CatalogAssetUploader")
   catalogRevisionsAuthored CatalogRevision[] @relation("CatalogRevisionActor")
   catalogCandidatesCreated CatalogCandidate[] @relation("CatalogCandidateCreator")
+  mediaSourceDossiers CatalogSourceDossier[] @relation("CatalogSourceDossierCreatedBy")
+  mediaIntakesUploaded CatalogMediaIntake[] @relation("CatalogMediaIntakeUploader")
   catalogRelationProposals CatalogRelationProposal[] @relation("CatalogRelationProposalCreator")
   editorialCasesOpened EditorialCase[] @relation("EditorialCaseOpenedBy")
 
@@ -218,6 +220,7 @@ model Anime {
   musicTracks AnimeMusicTrack[]
   catalogChangeRequests CatalogChangeRequest[]
   catalogAssets CatalogAsset[]
+  mediaIntakes CatalogMediaIntake[] @relation("CatalogMediaIntakeAnime")
   catalogRevisions CatalogRevision[]
   editorialSynopsisApprovals EditorialSynopsisApproval[]
   editorialSynopsisCommits EditorialSynopsisCommit[]
@@ -1439,4 +1442,47 @@ model CatalogRelationProposal {
   @@unique([kind, sourceId, targetId, relationKey])
   @@index([kind, createdAt, id])
   @@index([creatorId, createdAt, id])
+}
+
+// P16-W06: private source claims and image metadata staging; NO rights/publication grants.
+model CatalogSourceDossier {
+  id String @id @default(uuid()) @db.Uuid
+  sourceUrl String @db.Text
+  publisher String @db.VarChar(191)
+  rightsBasis String @db.VarChar(500)
+  licenseLabel String? @db.VarChar(100)
+  attribution String? @db.VarChar(500)
+  expiresAt DateTime?
+  revokedAt DateTime?
+  createdById String @db.Uuid
+  createdBy User @relation("CatalogSourceDossierCreatedBy", fields:[createdById], references:[id], onDelete:Restrict)
+  isQuarantined Boolean @default(true)
+  createdAt DateTime @default(now())
+  mediaIntakes CatalogMediaIntake[]
+
+  @@index([createdById, createdAt, id])
+  @@index([revokedAt, expiresAt])
+}
+
+model CatalogMediaIntake {
+  id String @id @default(uuid()) @db.Uuid
+  animeId String @db.Uuid
+  anime Anime @relation("CatalogMediaIntakeAnime", fields:[animeId], references:[id], onDelete:Restrict)
+  sourceDossierId String @db.Uuid
+  sourceDossier CatalogSourceDossier @relation(fields:[sourceDossierId], references:[id], onDelete:Restrict)
+  uploaderId String @db.Uuid
+  uploader User @relation("CatalogMediaIntakeUploader", fields:[uploaderId], references:[id], onDelete:Restrict)
+  kind CatalogAssetKind
+  sha256 String @db.Char(64)
+  mime String @db.VarChar(120)
+  byteLength Int
+  width Int
+  height Int
+  copyrightOwner String @db.VarChar(255)
+  isQuarantined Boolean @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([animeId, kind, sha256])
+  @@index([uploaderId, createdAt, id])
+  @@index([sourceDossierId])
 }

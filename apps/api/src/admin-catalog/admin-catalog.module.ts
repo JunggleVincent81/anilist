@@ -10,9 +10,10 @@ import { AdminAnimeCandidatesService } from './admin-anime-candidates.service.js
 import { AdminDomainRecordsService } from './admin-domain-records.service.js';
 import { AdminStructuredCandidatesService } from './admin-structured-candidates.service.js';
 import { AdminRelationManagerService } from './admin-relation-manager.service.js';
+import { AdminMediaEvidenceService } from './admin-media-evidence.service.js';
 
 @Module({
   imports: [AuthModule],
-  providers: [AdminCatalogResolver, AdminCatalogService, AdminWorkspaceOverviewService, AdminAnimeCandidatesService, AdminDomainRecordsService, AdminStructuredCandidatesService, AdminRelationManagerService, AdminSynopsisDraftService, AdminSynopsisReviewService, AdminSynopsisQueueService],
+  providers: [AdminCatalogResolver, AdminCatalogService, AdminWorkspaceOverviewService, AdminAnimeCandidatesService, AdminDomainRecordsService, AdminStructuredCandidatesService, AdminRelationManagerService, AdminMediaEvidenceService, AdminSynopsisDraftService, AdminSynopsisReviewService, AdminSynopsisQueueService],
 })
 export class AdminCatalogModule {}
