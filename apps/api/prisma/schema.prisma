@@ -964,7 +964,65 @@ model MangaWork {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  volumes MangaVolume[]
+  chapters MangaChapter[]
+
   @@index([isPublished, isAdult, title])
+}
+
+enum MangaChapterType {
+  REGULAR
+  SPECIAL
+  OTHER
+}
+
+model MangaVolume {
+  id String @id @default(uuid()) @db.Uuid
+
+  mangaWorkId String @db.Uuid
+  mangaWork MangaWork @relation(fields: [mangaWorkId], references: [id], onDelete: Restrict)
+
+  volumeKey String @db.VarChar(180)
+  number Int?
+  title String? @db.VarChar(500)
+  releaseDate DateTime? @db.Date
+  sourceReference String? @db.Text
+  isPublished Boolean @default(false)
+
+  chapters MangaChapter[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([mangaWorkId, volumeKey])
+  @@unique([id, mangaWorkId])
+  @@index([mangaWorkId, number])
+}
+
+model MangaChapter {
+  id String @id @default(uuid()) @db.Uuid
+
+  mangaWorkId String @db.Uuid
+  mangaWork MangaWork @relation(fields: [mangaWorkId], references: [id], onDelete: Restrict)
+
+  volumeId String? @db.Uuid
+  volume MangaVolume? @relation(fields: [volumeId, mangaWorkId], references: [id, mangaWorkId], onDelete: Restrict, onUpdate: Cascade)
+
+  chapterKey String @db.VarChar(180)
+  chapterType MangaChapterType @default(REGULAR)
+  number Decimal? @db.Decimal(12, 3)
+
+  title String? @db.VarChar(500)
+  releaseDate DateTime? @db.Date
+  sourceReference String? @db.Text
+  isPublished Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([mangaWorkId, chapterKey])
+  @@index([mangaWorkId, chapterType, number])
+  @@index([volumeId, mangaWorkId])
 }
 
 // AN-136: songs are not Anime(format=MUSIC) and cannot imply streaming rights.
