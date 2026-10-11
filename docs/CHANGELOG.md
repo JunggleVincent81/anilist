@@ -1,5 +1,46 @@
 # Documentation Changelog
 
+## 2026-10-10 — Documentation Consolidation (Phases 10–12)
+
+### Changed
+- Reorganized task-level AN notes into thematic Phase 10–12 documentation and three phase completion reports.
+- Preserved original technical details and milestone reports in named phase documents and evidence appendices.
+- Refreshed documentation index and roadmap; kept Phase 0–9 reports intact.
+- Reconciled historical pending-migration statements with later observed applied development migrations.
+
+### Scope
+- Documentation-only refactor; no application changes, migrations, curated content, publication, or production deployment.
+
+## 2026-10-09 — Phase 12 Private Admin Catalog
+
+### Added
+- Additive curation data schema, read-only protected dashboard, original private synopsis editor and revision-checked submission/review.
+- Restricted REQUEST_CHANGES / REJECT decisions and independent reviewer protection.
+- Local AN-146 security/browser acceptance, AN-147 audit evidence.
+
+### Deferred
+- Approve/publish canonical synopsis, image assets, production acceptance.
+
+## 2026-10-09 — Phase 11 Anime-first Homepage
+
+### Added
+- New anime-first Home with spotlight, seasonal and airing previews, safe community pulse and review previews.
+- Dedicated `/feed` route, weighted first-party community ranking, manga/music models/APIs/pages and explicit empty states.
+- Candidate image metadata and eligibility draft policy without public artwork authorization.
+
+### Deferred
+- Curated manga/music content, provider rankings, external image licensing/rights approval.
+
+## 2026-10-09 — Phase 10 Social and Production-readiness Baseline
+
+### Added
+- Activity likes/replies, anime reviews, social notifications, reports/moderation, feed and review/inbox UI.
+- GraphQL request safeguards, health checks, CI and local production-mode smoke baseline.
+
+### Clarified
+- Phase 10 feed's original placement at `/` was superseded by Phase 11 `/feed`.
+- Production-readiness baseline does not authorize production launch.
+
 ## 2026-10-08 — Phase 9 Achievements & Gratification
 
 ### Added

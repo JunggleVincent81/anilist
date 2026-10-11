@@ -62,12 +62,11 @@ test("AN-137 preserves safety gates and original backend review filter", () => {
   assert.doesNotMatch(home, /<ActivityFeed \/>/)
 })
 
-test("AN-137 records unresolved Phase 11 gates without claiming completion", () => {
-  const an136 = read("../../../docs/11-homepage/AN-136-MANGA-MUSIC-DATA-GATE.md")
-  const report = read("../../../docs/99-reports/AN-137-LOCAL-AUDIT-REPORT.md")
-  assert.match(an136, /DEFERRED/)
-  assert.match(report, /AN-134: BLOCKED/)
-  assert.match(report, /manual browser QA: PENDING/)
-  assert.match(report, /remote CI: NOT VERIFIED/)
-  assert.match(report, /deployment: DEFERRED/)
+test("AN-137 historical safety gates remain documented", () => {
+  const appendix = read("../../../docs/99-reports/PHASE-11-EVIDENCE-APPENDIX.md")
+  assert.match(appendix, /DEFERRED/)
+  assert.match(appendix, /AN-134: BLOCKED/)
+  assert.match(appendix, /manual browser QA: PENDING/)
+  assert.match(appendix, /remote CI: NOT VERIFIED/)
+  assert.match(appendix, /deployment: DEFERRED/)
 })

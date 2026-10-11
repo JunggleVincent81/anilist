@@ -9,12 +9,14 @@
 | 2 | UI Foundation | COMPLETE |
 | 3 | Accounts & Users | COMPLETE |
 | 4 | Anime Database & Discovery | COMPLETE |
-| 5 | Anime Detail | NEXT |
+| 5 | Anime Detail | COMPLETE |
 | 6 | Tracking MVP | PLANNED |
 | 7 | Profile, Favorites & Statistics | COMPLETE |
 | 8 | Seasonal, Airing & Discovery+ | COMPLETE |
 | 9 | Achievements & Gratification | COMPLETE |
-| 10 | Social, Community & Production | NEXT |
+| 10 | Social, Community & Production | COMPLETE — local scope |
+| 11 | Anime-first Homepage & Integrated Community | COMPLETE — local scope; content gates deferred |
+| 12 | Private Admin Catalog | COMPLETE — private scope; publication deferred |
 
 ## Major Milestones
 
@@ -51,3 +53,10 @@ Detail task hanya dibuat untuk:
 - phase berikutnya.
 
 Roadmap jangka panjang tetap high-level agar project dapat beradaptasi berdasarkan hasil implementasi nyata.
+
+
+## Post-Phase-12 Governance Gates
+- Public image/background sourcing and rights must be reviewed and explicitly authorized.
+- Canonical synopsis approval/publication is deferred; current review supports requests for changes and rejection only.
+- Manga/Music catalog publication requires curated provenance/eligibility evidence.
+- External rankings and production deployment need independent approval/verification.

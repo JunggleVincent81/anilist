@@ -117,3 +117,11 @@ subsequent scoped approval gates before any implementation.
 
 Detailed evidence:
 [Phase 13 Evidence Appendix](PHASE-13-EVIDENCE-APPENDIX.md).
+
+## Documentation consolidation (2026-10-11)
+
+- Original Phase 13 decisions and delivery status remain as documented above; consolidation does not change approvals.
+- Historical AN-148..152 source documents, if any, are preserved in [Phase 13 Evidence Appendix](PHASE-13-EVIDENCE-APPENDIX.md) before removing individual AN files.
+- Phase 14 implementation and scoped closure are documented separately in [Phase 14 Completion Report](PHASE-14-COMPLETION-REPORT.md).
+- Earlier individual AN documents, when not already included in phase appendices, are preserved in [Project Legacy Task Evidence Appendix](PROJECT-LEGACY-TASK-EVIDENCE-APPENDIX.md) if that archive exists.
+

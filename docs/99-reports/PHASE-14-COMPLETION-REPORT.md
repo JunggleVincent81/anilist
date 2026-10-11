@@ -30,3 +30,14 @@ Phase-13 direction also mentioned a private CatalogCandidate/staging foundation 
 - Phase 15 and Phase 16 remain deferred pending later user approval.
 
 **Final status:** Phase 14 approved foundational implementation track is locally closed, with explicitly recorded deferred features and outstanding operational acceptance gates.
+
+## Documentation and website QA handoff (2026-10-11)
+
+- Local scoped closure commit: `b70dc0eb3ef0c3bbd0c142520d46be78362997ba`. Phase 14 covered AnimeEpisode, MangaVolume/Chapter, canonical music, AnimeMangaRelation, AnimeMusicUsage and integration checks.
+- Historical AN-153..158 documents, where present, are preserved in [Phase 14 Evidence Appendix](PHASE-14-EVIDENCE-APPENDIX.md) before individual AN document removal.
+- Website QA evidence from 2026-10-11: web unit tests **68/68 PASS**, API Jest **301/301 PASS**, web/API TypeScript and ESLint PASS; 9/9 HTTP routes, 5/5 existing Playwright E2E checks, and desktop/mobile page-load checks 18/18. These are local test results, not production acceptance.
+- Remaining caveats: development-server HMR WebSocket warnings; one unlocated console 404; Feed settled-state verification **inconclusive** because the visible page still showed `Loading activity…` (Unicode ellipsis), despite a previous script reporting PASS. The user deferred additional Feed investigation.
+- No development/production migration or deployment was performed as part of Phase 14, and browser/manual authenticated end-to-end acceptance remains separate.
+- CatalogCandidate/staging and generic editorial root were **deferred**, not implemented or approved for publication.
+- This documentation consolidation does not authorize production deployment, seed/backfill, or migration of the development database.
+

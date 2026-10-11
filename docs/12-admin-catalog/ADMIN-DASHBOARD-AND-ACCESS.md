@@ -1,4 +1,15 @@
-# AN-140C — Protected Admin Catalog Dashboard
+# Read-only Admin Dashboard and Authorization
+
+Admin-only server GraphQL protection is authoritative; a browser role check is convenience, not security. Other user roles do not inherit catalog curation privileges.
+
+> Consolidated technical reference. Earlier milestone status lines are historical; current status is specified in the phase completion report.
+
+
+---
+
+## 140C Read Only Admin Dashboard
+
+*Historical source: `AN-140C-READ-ONLY-ADMIN-DASHBOARD.md`.*
 
 Status: implementation milestone; verify quality logs and Git checkpoint before marking delivered.
 
