@@ -1040,6 +1040,9 @@ model AnimeMusicTrack {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  recordings MusicRecording[]
+  musicCredits MusicCredit[]
+
   @@index([isPublished, category, title])
   @@index([animeId])
 }
@@ -1050,4 +1053,121 @@ enum AnimeMusicCategory {
   SOUNDTRACK
   INSERT_SONG
   OTHER
+}
+
+
+// AN-156: Additive canonical music domain. Legacy AnimeMusicTrack stays public identity.
+enum MusicCreditKind {
+  PRIMARY_ARTIST
+  CONTRIBUTOR
+}
+
+enum MusicReleaseType {
+  SINGLE
+  EP
+  ALBUM
+  SOUNDTRACK
+  OTHER
+}
+
+model MusicArtist {
+  id String @id @default(uuid()) @db.Uuid
+  artistKey String @unique @db.VarChar(220)
+  displayName String @db.VarChar(250)
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  isPublished Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  credits MusicCredit[]
+
+  @@index([isPublished, displayName])
+}
+
+model MusicRecording {
+  id String @id @default(uuid()) @db.Uuid
+  recordingKey String @unique @db.VarChar(220)
+  animeMusicTrackId String? @db.Uuid
+  animeMusicTrack AnimeMusicTrack? @relation(fields: [animeMusicTrackId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  title String @db.VarChar(500)
+  versionLabel String? @db.VarChar(250)
+  durationMs Int?
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  isPublished Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  releaseTracks MusicReleaseTrack[]
+  credits MusicCredit[]
+
+  @@index([animeMusicTrackId])
+  @@index([isPublished, title])
+}
+
+model MusicRelease {
+  id String @id @default(uuid()) @db.Uuid
+  releaseKey String @unique @db.VarChar(220)
+  title String @db.VarChar(500)
+  releaseType MusicReleaseType @default(OTHER)
+  releaseDate DateTime? @db.Date
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  isPublished Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tracks MusicReleaseTrack[]
+  credits MusicCredit[]
+
+  @@index([isPublished, releaseType, title])
+}
+
+model MusicReleaseTrack {
+  id String @id @default(uuid()) @db.Uuid
+  releaseId String @db.Uuid
+  release MusicRelease @relation(fields: [releaseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  recordingId String @db.Uuid
+  recording MusicRecording @relation(fields: [recordingId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  discNumber Int @default(1)
+  trackNumber Int
+  displayTitle String? @db.VarChar(500)
+  isPublished Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  credits MusicCredit[]
+
+  @@unique([releaseId, discNumber, trackNumber])
+  @@index([recordingId])
+}
+
+model MusicCredit {
+  id String @id @default(uuid()) @db.Uuid
+  artistId String @db.Uuid
+  artist MusicArtist @relation(fields: [artistId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  animeMusicTrackId String? @db.Uuid
+  animeMusicTrack AnimeMusicTrack? @relation(fields: [animeMusicTrackId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  recordingId String? @db.Uuid
+  recording MusicRecording? @relation(fields: [recordingId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  releaseId String? @db.Uuid
+  release MusicRelease? @relation(fields: [releaseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  releaseTrackId String? @db.Uuid
+  releaseTrack MusicReleaseTrack? @relation(fields: [releaseTrackId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  kind MusicCreditKind
+  role String @db.VarChar(100)
+  creditedAs String? @db.VarChar(250)
+  position Int?
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  isPublished Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([artistId, kind, position])
+  @@index([animeMusicTrackId])
+  @@index([recordingId])
+  @@index([releaseId])
+  @@index([releaseTrackId])
 }
