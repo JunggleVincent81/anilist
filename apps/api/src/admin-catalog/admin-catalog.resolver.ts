@@ -14,6 +14,8 @@ import { AdminAnimeCandidatesService } from './admin-anime-candidates.service.js
 import { AdminDomainRecordsService } from './admin-domain-records.service.js';
 import { AdminDomainPageInput, AdminDomainRecordPageType } from './admin-domain-records.graphql.js';
 import { AdminStructuredCandidatesService } from './admin-structured-candidates.service.js';
+import { AdminRelationManagerService } from './admin-relation-manager.service.js';
+import { AdminRelationPageInput, AdminRelationProposalPageType, AdminRelationProposalType, AdminRelationCanonicalPageType, CreateAdminRelationProposalInput } from './admin-relation-manager.graphql.js';
 import { AdminStructuredCandidatePageInput, AdminStructuredCandidatePageType, AdminStructuredCandidateType, CreateAdminStructuredCandidateInput, UpdateAdminStructuredCandidateInput } from './admin-structured-candidates.graphql.js';
 import { AdminAnimeCandidatePageInput, AdminAnimeCandidatePageType, AdminAnimeCandidateType, CreateAdminAnimeCandidateInput, UpdateAdminAnimeCandidateInput } from './admin-anime-candidates.graphql.js';
 import type { GraphQLAuthContext } from '../auth/auth.types.js';
@@ -24,7 +26,7 @@ import { AdminSynopsisDraftType, CreateAdminSynopsisDraftInput, UpdateAdminSynop
 
 @Resolver()
 export class AdminCatalogResolver {
-  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService, private readonly structuredCandidates: AdminStructuredCandidatesService) {}
+  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService, private readonly structuredCandidates: AdminStructuredCandidatesService, private readonly relations: AdminRelationManagerService) {}
 
   @Query(() => AdminWorkspaceOverviewType)
   @UseGuards(RolesGuard)
@@ -86,6 +88,30 @@ export class AdminCatalogResolver {
   updateAdminStructuredCandidate(@Args('input') input: UpdateAdminStructuredCandidateInput,
     @Context() context: GraphQLAuthContext): Promise<AdminStructuredCandidateType> {
     return this.structuredCandidates.update(context.currentUser!.id, input);
+  }
+
+  @Query(() => AdminRelationCanonicalPageType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminRelationCanonicalPage(@Args('input') input: AdminRelationPageInput,
+    @Context() context: GraphQLAuthContext): Promise<AdminRelationCanonicalPageType> {
+    return this.relations.canonical(context.currentUser!.id, input);
+  }
+
+  @Query(() => AdminRelationProposalPageType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminRelationProposalPage(@Args('input') input: AdminRelationPageInput,
+    @Context() context: GraphQLAuthContext): Promise<AdminRelationProposalPageType> {
+    return this.relations.proposals(context.currentUser!.id, input);
+  }
+
+  @Mutation(() => AdminRelationProposalType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  createAdminRelationProposal(@Args('input') input: CreateAdminRelationProposalInput,
+    @Context() context: GraphQLAuthContext): Promise<AdminRelationProposalType> {
+    return this.relations.create(context.currentUser!.id, input);
   }
 
   @Query(() => AdminCatalogOverviewType)

@@ -77,6 +77,7 @@ export function AdminCatalogDashboard() {
           <Link href="/admin/catalog/manga" className={controlStyle}>Manga Manager</Link>
           <Link href="/admin/catalog/music" className={controlStyle}>Music Manager</Link>
           <Link href="/admin/catalog/editor" className={controlStyle}>Quick Add &amp; Full Editors</Link>
+          <Link href="/admin/catalog/relations" className={controlStyle}>Relation Manager</Link>
           <Link href="/admin/catalog/review" className={controlStyle}>Review submissions</Link><button type="button" onClick={() => setRefresh((n) => n + 1)} className={controlStyle}>Refresh data</button>
         </div>
       </header>

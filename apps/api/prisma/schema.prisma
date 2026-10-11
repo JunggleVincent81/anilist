@@ -152,6 +152,7 @@ model User {
   catalogAssetsUploaded CatalogAsset[] @relation("CatalogAssetUploader")
   catalogRevisionsAuthored CatalogRevision[] @relation("CatalogRevisionActor")
   catalogCandidatesCreated CatalogCandidate[] @relation("CatalogCandidateCreator")
+  catalogRelationProposals CatalogRelationProposal[] @relation("CatalogRelationProposalCreator")
   editorialCasesOpened EditorialCase[] @relation("EditorialCaseOpenedBy")
 
   id           String @id @default(uuid()) @db.Uuid
@@ -1406,4 +1407,36 @@ model EditorialSynopsisCommit {
 
   @@index([animeId])
   @@index([actorId])
+}
+
+// P16-W05: private relation proposals; canonical relations remain untouched.
+enum CatalogRelationKind {
+  ANIME_MANGA
+  ANIME_MUSIC_USAGE
+  ANIME_EPISODE
+  MUSIC_RELEASE_TRACK
+  MUSIC_CREDIT_TRACK
+  MUSIC_CREDIT_RECORDING
+  MUSIC_CREDIT_RELEASE
+  MUSIC_CREDIT_RELEASE_TRACK
+}
+
+model CatalogRelationProposal {
+  id String @id @default(uuid()) @db.Uuid
+  kind CatalogRelationKind
+  sourceId String @db.Uuid
+  targetId String @db.Uuid
+  relationKey String @db.VarChar(180)
+  details Json
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  creatorId String @db.Uuid
+  creator User @relation("CatalogRelationProposalCreator", fields:[creatorId], references:[id], onDelete:Restrict)
+  isQuarantined Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([kind, sourceId, targetId, relationKey])
+  @@index([kind, createdAt, id])
+  @@index([creatorId, createdAt, id])
 }
