@@ -205,6 +205,7 @@ model Session {
 }
 
 model Anime {
+  animeMangaRelations AnimeMangaRelation[]
   episodeRecords AnimeEpisode[]
   musicTracks AnimeMusicTrack[]
   catalogChangeRequests CatalogChangeRequest[]
@@ -953,6 +954,7 @@ model CatalogProductionCountry {
 
 // AN-136: Independent first-party manga catalogue; nothing auto-imported or public by default.
 model MangaWork {
+  animeMangaRelations AnimeMangaRelation[]
   id String @id @default(uuid()) @db.Uuid
   slug String @unique @db.VarChar(220)
   title String @db.VarChar(500)
@@ -1170,4 +1172,34 @@ model MusicCredit {
   @@index([recordingId])
   @@index([releaseId])
   @@index([releaseTrackId])
+}
+
+
+// AN-157A: additive, curator-evidenced Anime-to-Manga relationships.
+enum AnimeMangaRelationType {
+  ADAPTATION
+  SOURCE_MATERIAL
+  SPIN_OFF
+  SIDE_STORY
+  RELATED
+  OTHER
+}
+
+model AnimeMangaRelation {
+  id String @id @default(uuid()) @db.Uuid
+  animeId String @db.Uuid
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  mangaWorkId String @db.Uuid
+  mangaWork MangaWork @relation(fields: [mangaWorkId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  relationType AnimeMangaRelationType
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  isPublished Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([animeId, mangaWorkId, relationType])
+  @@index([animeId, relationType])
+  @@index([mangaWorkId, relationType])
+  @@index([isPublished, relationType])
 }
