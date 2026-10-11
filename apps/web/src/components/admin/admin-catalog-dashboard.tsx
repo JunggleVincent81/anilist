@@ -74,6 +74,8 @@ export function AdminCatalogDashboard() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div><h1 className="text-3xl font-bold tracking-tight">Catalog curation</h1><p className="mt-2 text-sm text-muted-foreground">Private catalog inspection and separate synopsis drafting. Canonical edits and publishing remain disabled.</p></div>
           <Link href="/admin/catalog/anime" className={controlStyle}>Anime Manager</Link>
+          <Link href="/admin/catalog/manga" className={controlStyle}>Manga Manager</Link>
+          <Link href="/admin/catalog/music" className={controlStyle}>Music Manager</Link>
           <Link href="/admin/catalog/review" className={controlStyle}>Review submissions</Link><button type="button" onClick={() => setRefresh((n) => n + 1)} className={controlStyle}>Refresh data</button>
         </div>
       </header>

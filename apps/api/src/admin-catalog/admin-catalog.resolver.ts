@@ -11,6 +11,8 @@ import { AdminCatalogService } from './admin-catalog.service.js';
 import { AdminWorkspaceOverviewService } from './admin-workspace-overview.service.js';
 import { AdminWorkspaceOverviewType } from './admin-workspace-overview.graphql.js';
 import { AdminAnimeCandidatesService } from './admin-anime-candidates.service.js';
+import { AdminDomainRecordsService } from './admin-domain-records.service.js';
+import { AdminDomainPageInput, AdminDomainRecordPageType } from './admin-domain-records.graphql.js';
 import { AdminAnimeCandidatePageInput, AdminAnimeCandidatePageType, AdminAnimeCandidateType, CreateAdminAnimeCandidateInput, UpdateAdminAnimeCandidateInput } from './admin-anime-candidates.graphql.js';
 import type { GraphQLAuthContext } from '../auth/auth.types.js';
 import { AdminSynopsisReviewService } from './admin-synopsis-review.service.js';
@@ -20,7 +22,7 @@ import { AdminSynopsisDraftType, CreateAdminSynopsisDraftInput, UpdateAdminSynop
 
 @Resolver()
 export class AdminCatalogResolver {
-  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService) {}
+  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService) {}
 
   @Query(() => AdminWorkspaceOverviewType)
   @UseGuards(RolesGuard)
@@ -51,6 +53,13 @@ export class AdminCatalogResolver {
   updateAdminAnimeCandidate(@Args('input') input: UpdateAdminAnimeCandidateInput,
     @Context() context: GraphQLAuthContext): Promise<AdminAnimeCandidateType> {
     return this.animeCandidates.update(context.currentUser!.id, input);
+  }
+
+  @Query(() => AdminDomainRecordPageType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminDomainRecordPage(@Args('input') input: AdminDomainPageInput): Promise<AdminDomainRecordPageType> {
+    return this.domainRecords.page(input);
   }
 
   @Query(() => AdminCatalogOverviewType)

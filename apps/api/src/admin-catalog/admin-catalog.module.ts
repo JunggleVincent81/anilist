@@ -7,9 +7,10 @@ import { AdminSynopsisDraftService } from './admin-synopsis-draft.service.js';
 import { AdminCatalogService } from './admin-catalog.service.js';
 import { AdminWorkspaceOverviewService } from './admin-workspace-overview.service.js';
 import { AdminAnimeCandidatesService } from './admin-anime-candidates.service.js';
+import { AdminDomainRecordsService } from './admin-domain-records.service.js';
 
 @Module({
   imports: [AuthModule],
-  providers: [AdminCatalogResolver, AdminCatalogService, AdminWorkspaceOverviewService, AdminAnimeCandidatesService, AdminSynopsisDraftService, AdminSynopsisReviewService, AdminSynopsisQueueService],
+  providers: [AdminCatalogResolver, AdminCatalogService, AdminWorkspaceOverviewService, AdminAnimeCandidatesService, AdminDomainRecordsService, AdminSynopsisDraftService, AdminSynopsisReviewService, AdminSynopsisQueueService],
 })
 export class AdminCatalogModule {}
