@@ -142,6 +142,7 @@ enum ActivityVisibility {
 }
 
 model User {
+  editorialCaseTransitions EditorialCaseTransition[] @relation("EditorialCaseTransitionActor")
   catalogChangesCreated CatalogChangeRequest[] @relation("CatalogChangeCreator")
   catalogEvidenceCreated CatalogEvidence[] @relation("CatalogEvidenceCreator")
   catalogReviewsAuthored CatalogReviewDecision[] @relation("CatalogReviewActor")
@@ -1281,6 +1282,7 @@ model CatalogCandidate {
 // Generic root. APPROVED is an editorial state, NOT canonical publication.
 // Polymorphic canonicalEntityId must be validated in a later service layer.
 model EditorialCase {
+  transitions EditorialCaseTransition[]
   id String @id @default(uuid()) @db.Uuid
   subjectType EditorialSubjectType
   candidateId String? @db.Uuid
@@ -1299,4 +1301,30 @@ model EditorialCase {
   @@index([subjectType, state, createdAt, id])
   @@index([subjectType, canonicalEntityId])
   @@index([openedById, createdAt, id])
+}
+// AN-162A: Durable, private, append-only transition ledger.
+// NOT a canonical publication history and NOT a backfill of legacy decisions.
+enum EditorialTransitionAction {
+  SUBMIT
+  BEGIN_REVIEW
+  REQUEST_CHANGES
+  REJECT
+}
+model EditorialCaseTransition {
+  id String @id @default(uuid()) @db.Uuid
+  caseId String @db.Uuid
+  editorialCase EditorialCase @relation(fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  actorId String @db.Uuid
+  actor User @relation("EditorialCaseTransitionActor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  action EditorialTransitionAction
+  fromState EditorialCaseState
+  toState EditorialCaseState
+  previousRevision Int
+  nextRevision Int
+  policyVersion String @db.VarChar(60)
+  note String? @db.VarChar(2000)
+  createdAt DateTime @default(now())
+  @@unique([caseId, nextRevision])
+  @@index([caseId, createdAt, id])
+  @@index([actorId, createdAt, id])
 }

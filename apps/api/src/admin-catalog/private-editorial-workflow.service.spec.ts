@@ -8,6 +8,7 @@ const opener = 'e88c6f0b-252d-438f-a70b-dbc44f718dc1';
 const reviewer = 'a7c39476-3cad-43eb-8a80-8ba50be29f9d';
 const caseId = '0a2e5478-aa72-4bd5-ac03-05c94a5636b8';
 const candidateId = 'eee24b95-3f95-40f6-b836-b7656d781400';
+const transitionId = '118b7ad6-88b9-4740-bf1c-97832db204d3';
 
 type SelectedCase = Pick<EditorialCase,
   'id' | 'state' | 'revision' | 'openedById' | 'legacyChangeRequestId' | 'candidateId' | 'subjectType'>;
@@ -29,10 +30,14 @@ function fixture(options: {
   };
   const findUnique = jest.fn(async (_args?: unknown): Promise<SelectedCase | null> => options.missing ? null : row);
   const updateMany = jest.fn(async (_args?: unknown) => ({ count: options.updated ?? 1 }));
-  const tx = { editorialCase: { findUnique, updateMany } };
+  const create = jest.fn(async (_args?: unknown) => ({ id: transitionId }));
+  const tx = {
+    editorialCase: { findUnique, updateMany },
+    editorialCaseTransition: { create },
+  };
   const transaction = jest.fn(async (callback: (client: typeof tx) => Promise<unknown>) => callback(tx));
   const service = new PrivateEditorialWorkflowService({ $transaction: transaction } as unknown as PrismaService);
-  return { service, findUnique, updateMany, transaction };
+  return { service, findUnique, updateMany, create, transaction };
 }
 
 const submit = { caseId, action: 'SUBMIT', expectedRevision: 1 };
@@ -58,6 +63,12 @@ describe('AN-161B internal editorial service (mocked, no database)', () => {
         legacyChangeRequestId: null, candidateId, subjectType: 'ANIME' },
       data: { state: 'SUBMITTED', revision: { increment: 1 } },
     });
+    expect(h.create).toHaveBeenCalledWith({
+      data: { caseId, actorId: opener, action: 'SUBMIT', fromState: 'DRAFT',
+        toState: 'SUBMITTED', previousRevision: 1, nextRevision: 2,
+        policyVersion: 'AN-161A-v1', note: null },
+      select: { id: true },
+    });
   });
 
   it('requires a different reviewer and permits only approved policy transitions', async () => {
@@ -70,37 +81,74 @@ describe('AN-161B internal editorial service (mocked, no database)', () => {
       { caseId, expectedRevision: 2, action: 'REJECT', note: 'Insufficient provenance' }))
       .rejects.toThrow(ForbiddenException);
     expect(denied.updateMany).not.toHaveBeenCalled();
+    expect(denied.create).not.toHaveBeenCalled();
   });
 
   it('rejects old revisions, missing cases, linked legacy workflow, and publication', async () => {
     const stale = fixture({ row: { revision: 3 } });
     await expect(stale.service.transition({ id: opener, role: 'ADMIN' }, submit)).rejects.toThrow(ConflictException);
     expect(stale.updateMany).not.toHaveBeenCalled();
+    expect(stale.create).not.toHaveBeenCalled();
     const missing = fixture({ missing: true });
     await expect(missing.service.transition({ id: opener, role: 'ADMIN' }, submit)).rejects.toThrow(NotFoundException);
     const legacy = fixture({ row: { legacyChangeRequestId: '03138766-bd07-4691-b7f9-b32e30bfc53c' } });
     await expect(legacy.service.transition({ id: opener, role: 'ADMIN' }, submit)).rejects.toThrow(ConflictException);
     expect(legacy.updateMany).not.toHaveBeenCalled();
+    expect(legacy.create).not.toHaveBeenCalled();
     const publish = fixture();
     await expect(publish.service.transition({ id: opener, role: 'ADMIN' }, { ...submit, action: 'PUBLISH' })).rejects.toThrow(BadRequestException);
     expect(publish.updateMany).not.toHaveBeenCalled();
+    expect(publish.create).not.toHaveBeenCalled();
   });
 
   it('fails closed on compare-and-swap race and transaction failure', async () => {
     const raced = fixture({ updated: 0 });
     await expect(raced.service.transition({ id: opener, role: 'ADMIN' }, submit)).rejects.toThrow(ConflictException);
     expect(raced.updateMany).toHaveBeenCalledTimes(1);
+    expect(raced.create).not.toHaveBeenCalled();
     const broken = fixture();
     broken.updateMany.mockImplementationOnce(async () => { throw new Error('Simulated database failure'); });
     await expect(broken.service.transition({ id: opener, role: 'ADMIN' }, submit)).rejects.toThrow('Simulated database failure');
   });
 
-  it('updates only private case state; note/audit persistence stays blocked until AN-162', async () => {
+  it('writes the normalized human reason in the same transaction as the revision', async () => {
     const h = fixture({ row: { state: 'UNDER_REVIEW', revision: 3 } });
     await expect(h.service.transition({ id: reviewer, role: 'ADMIN' },
       { caseId, expectedRevision: 3, action: 'REQUEST_CHANGES', note: 'Please clarify original rights' }))
       .resolves.toMatchObject({ state: 'DRAFT', revision: 4 });
     expect(h.updateMany).toHaveBeenCalledTimes(1);
+    expect(h.create).toHaveBeenCalledWith({
+      data: { caseId, actorId: reviewer, action: 'REQUEST_CHANGES',
+        fromState: 'UNDER_REVIEW', toState: 'DRAFT', previousRevision: 3,
+        nextRevision: 4, policyVersion: 'AN-161A-v1',
+        note: 'Please clarify original rights' },
+      select: { id: true },
+    });
     expect(h.transaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails the transaction callback when audit persistence fails', async () => {
+    const h = fixture();
+    h.create.mockImplementationOnce(async () => { throw new Error('Simulated audit persistence failure'); });
+    await expect(h.service.transition({ id: opener, role: 'ADMIN' }, submit))
+      .rejects.toThrow('Simulated audit persistence failure');
+    expect(h.updateMany).toHaveBeenCalledTimes(1);
+    expect(h.create).toHaveBeenCalledTimes(1);
+    expect(h.transaction).toHaveBeenCalledTimes(1);
+    // A mocked Prisma callback cannot certify database rollback;
+    // isolated PostgreSQL integration must prove persisted atomicity.
+  });
+
+  it('captures a distinct reviewer and human rejection note', async () => {
+    const h = fixture({ row: { state: 'UNDER_REVIEW', revision: 3 } });
+    await h.service.transition({ id: reviewer, role: 'ADMIN' },
+      { caseId, expectedRevision: 3, action: 'REJECT', note: '  Evidence not valid  ' });
+    expect(h.create).toHaveBeenCalledWith({
+      data: { caseId, actorId: reviewer, action: 'REJECT',
+        fromState: 'UNDER_REVIEW', toState: 'REJECTED',
+        previousRevision: 3, nextRevision: 4,
+        policyVersion: 'AN-161A-v1', note: 'Evidence not valid' },
+      select: { id: true },
+    });
   });
 });

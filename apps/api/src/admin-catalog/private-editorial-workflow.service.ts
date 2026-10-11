@@ -5,13 +5,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { EditorialTransitionAction } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service.js';
 import { planEditorialWorkflowTransition } from './editorial-workflow-policy.js';
 
 /**
  * AN-161B: INTERNAL-ONLY service. Intentionally NOT registered in any Nest module,
- * resolver, controller or public route. Do not enable until AN-162 adds a durable
- * per-transition audit trail and the new editorial DB migration is approved.
+ * resolver, controller or public route. AN-162B adds an atomic transition ledger
+ * write; still do NOT enable until the audit migration and independent integration,
+ * authorization, and publication gates have explicit approval.
  *
  * actor MUST come from trusted server-side auth context in a future caller,
  * never from client-provided GraphQL/HTTP input.
@@ -91,11 +93,31 @@ export class PrivateEditorialWorkflowService {
       if (changed.count !== 1) {
         throw new ConflictException('Editorial case changed during transition.');
       }
+      // The case revision and audit event are committed in the SAME Prisma
+      // interactive transaction. A failed audit insert rejects this callback,
+      // rolling back the preceding compare-and-swap update.
+      const transition = await tx.editorialCaseTransition.create({
+        data: {
+          caseId: current.id,
+          actorId: actor.id,
+          action: input.action as EditorialTransitionAction,
+          fromState: current.state,
+          toState: plan.nextState,
+          previousRevision: plan.expectedRevision,
+          nextRevision: plan.nextRevision,
+          policyVersion: plan.policyVersion,
+          note: input.action === 'REQUEST_CHANGES' || input.action === 'REJECT'
+            ? input.note?.trim() ?? null
+            : null,
+        },
+        select: { id: true },
+      });
       return {
         id: current.id,
         state: plan.nextState,
         revision: plan.nextRevision,
         policyVersion: plan.policyVersion,
+        transitionId: transition.id,
       };
     });
   }
