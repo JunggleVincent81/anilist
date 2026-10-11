@@ -8,6 +8,8 @@ import { Roles } from '../auth/authorization/roles.decorator.js';
 import { RolesGuard } from '../auth/authorization/roles.guard.js';
 import { AdminCatalogOverviewType, AdminCatalogPageInput, AdminCatalogPageType } from './admin-catalog.graphql.js';
 import { AdminCatalogService } from './admin-catalog.service.js';
+import { AdminWorkspaceOverviewService } from './admin-workspace-overview.service.js';
+import { AdminWorkspaceOverviewType } from './admin-workspace-overview.graphql.js';
 import type { GraphQLAuthContext } from '../auth/auth.types.js';
 import { AdminSynopsisReviewService } from './admin-synopsis-review.service.js';
 import { AdminSynopsisWorkflowType, SubmitAdminSynopsisInput, ReviewAdminSynopsisInput } from './admin-synopsis-review.graphql.js';
@@ -16,7 +18,14 @@ import { AdminSynopsisDraftType, CreateAdminSynopsisDraftInput, UpdateAdminSynop
 
 @Resolver()
 export class AdminCatalogResolver {
-  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService) {}
+  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService) {}
+
+  @Query(() => AdminWorkspaceOverviewType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminWorkspaceOverview(): Promise<AdminWorkspaceOverviewType> {
+    return this.workspaceOverview.overview();
+  }
 
   @Query(() => AdminCatalogOverviewType)
   @UseGuards(RolesGuard)

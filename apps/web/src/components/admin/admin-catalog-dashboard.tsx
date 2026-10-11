@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState, type FormEvent } from 'react';
 import { useAuth } from '@/components/auth/auth-provider';
 import { fetchAdminCatalogOverview, fetchAdminCatalogPage } from '@/lib/graphql/admin-catalog';
+import { AdminWorkspaceOverviewPanel } from './admin-workspace-overview';
 import type { AdminCatalogAge, AdminCatalogOverview, AdminCatalogResult, AdminCatalogStatus } from '@/lib/graphql/admin-catalog';
 
 const cardStyle = 'rounded-2xl border border-border bg-surface p-4 sm:p-5';
@@ -75,6 +76,8 @@ export function AdminCatalogDashboard() {
           <Link href="/admin/catalog/review" className={controlStyle}>Review submissions</Link><button type="button" onClick={() => setRefresh((n) => n + 1)} className={controlStyle}>Refresh data</button>
         </div>
       </header>
+
+      <AdminWorkspaceOverviewPanel refresh={refresh} />
 
       {currentFailure ? <div role="alert" className={`${cardStyle} border-destructive/50`}><p>Unable to load admin catalog: {currentFailure}</p><button className="mt-3 text-sm text-primary underline" onClick={() => setRefresh((n) => n + 1)} type="button">Try again</button></div> : null}
       {!loaded && !currentFailure ? <p role="status" className="text-sm text-muted-foreground">Loading private catalog metrics…</p> : null}
