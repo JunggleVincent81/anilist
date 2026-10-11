@@ -143,6 +143,9 @@ enum ActivityVisibility {
 
 model User {
   editorialCaseTransitions EditorialCaseTransition[] @relation("EditorialCaseTransitionActor")
+  editorialSynopsisEvidenceVerified EditorialSynopsisEvidence[] @relation("EditorialSynopsisEvidenceVerifier")
+  editorialSynopsisApprovalsReviewed EditorialSynopsisApproval[] @relation("EditorialSynopsisApprovalReviewer")
+  editorialSynopsisCommitsAuthored EditorialSynopsisCommit[] @relation("EditorialSynopsisCommitActor")
   catalogChangesCreated CatalogChangeRequest[] @relation("CatalogChangeCreator")
   catalogEvidenceCreated CatalogEvidence[] @relation("CatalogEvidenceCreator")
   catalogReviewsAuthored CatalogReviewDecision[] @relation("CatalogReviewActor")
@@ -215,6 +218,8 @@ model Anime {
   catalogChangeRequests CatalogChangeRequest[]
   catalogAssets CatalogAsset[]
   catalogRevisions CatalogRevision[]
+  editorialSynopsisApprovals EditorialSynopsisApproval[]
+  editorialSynopsisCommits EditorialSynopsisCommit[]
   catalogProductionCountries CatalogProductionCountry[]
 
   id String @id @default(uuid()) @db.Uuid
@@ -1270,6 +1275,7 @@ model CatalogCandidate {
   creatorId String? @db.Uuid
   creator User? @relation("CatalogCandidateCreator", fields: [creatorId], references: [id], onDelete: Restrict)
   editorialCases EditorialCase[]
+  synopsisEvidence EditorialSynopsisEvidence[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1283,6 +1289,9 @@ model CatalogCandidate {
 // Polymorphic canonicalEntityId must be validated in a later service layer.
 model EditorialCase {
   transitions EditorialCaseTransition[]
+  synopsisEvidence EditorialSynopsisEvidence?
+  synopsisApproval EditorialSynopsisApproval?
+  synopsisCommit EditorialSynopsisCommit?
   id String @id @default(uuid()) @db.Uuid
   subjectType EditorialSubjectType
   candidateId String? @db.Uuid
@@ -1309,6 +1318,7 @@ enum EditorialTransitionAction {
   BEGIN_REVIEW
   REQUEST_CHANGES
   REJECT
+  APPROVE
 }
 model EditorialCaseTransition {
   id String @id @default(uuid()) @db.Uuid
@@ -1327,4 +1337,73 @@ model EditorialCaseTransition {
   @@unique([caseId, nextRevision])
   @@index([caseId, createdAt, id])
   @@index([actorId, createdAt, id])
+}
+
+// AN-165: private, manually verified synopsis evidence only. No public rights grant.
+model EditorialSynopsisEvidence {
+  id String @id @default(uuid()) @db.Uuid
+  caseId String @unique @db.Uuid
+  case EditorialCase @relation(fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  candidateId String @db.Uuid
+  candidate CatalogCandidate @relation(fields: [candidateId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  caseRevision Int
+  verifiedById String @db.Uuid
+  verifier User @relation("EditorialSynopsisEvidenceVerifier", fields: [verifiedById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  sourceUrl String @db.Text
+  rightsBasis String @db.VarChar(500)
+  candidateDigest String @db.Char(64)
+  verifiedAt DateTime
+  expiresAt DateTime?
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  approval EditorialSynopsisApproval?
+
+  @@index([candidateId])
+  @@index([verifiedById])
+}
+
+// AN-165: immutable independent human approval; distinct from legacy CatalogReviewDecision.
+model EditorialSynopsisApproval {
+  id String @id @default(uuid()) @db.Uuid
+  caseId String @unique @db.Uuid
+  case EditorialCase @relation(fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  evidenceId String @unique @db.Uuid
+  evidence EditorialSynopsisEvidence @relation(fields: [evidenceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  animeId String @db.Uuid
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  reviewerId String @db.Uuid
+  reviewer User @relation("EditorialSynopsisApprovalReviewer", fields: [reviewerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  reviewedRevision Int
+  approvedRevision Int
+  candidateDigest String @db.Char(64)
+  synopsisDigest String @db.Char(64)
+  reviewNote String @db.VarChar(2000)
+  createdAt DateTime @default(now())
+  commit EditorialSynopsisCommit?
+
+  @@index([animeId])
+  @@index([reviewerId])
+}
+
+// AN-166: immutable before/after snapshot of a private Anime.description-only commit.
+model EditorialSynopsisCommit {
+  id String @id @default(uuid()) @db.Uuid
+  caseId String @unique @db.Uuid
+  case EditorialCase @relation(fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  approvalId String @unique @db.Uuid
+  approval EditorialSynopsisApproval @relation(fields: [approvalId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  animeId String @db.Uuid
+  anime Anime @relation(fields: [animeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  actorId String @db.Uuid
+  actor User @relation("EditorialSynopsisCommitActor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  beforeDescription String? @db.Text
+  afterDescription String @db.Text
+  beforeUpdatedAt DateTime
+  afterUpdatedAt DateTime
+  synopsisDigest String @db.Char(64)
+  policyVersion String @db.VarChar(60)
+  createdAt DateTime @default(now())
+
+  @@index([animeId])
+  @@index([actorId])
 }
