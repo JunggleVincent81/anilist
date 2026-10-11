@@ -147,6 +147,8 @@ model User {
   catalogReviewsAuthored CatalogReviewDecision[] @relation("CatalogReviewActor")
   catalogAssetsUploaded CatalogAsset[] @relation("CatalogAssetUploader")
   catalogRevisionsAuthored CatalogRevision[] @relation("CatalogRevisionActor")
+  catalogCandidatesCreated CatalogCandidate[] @relation("CatalogCandidateCreator")
+  editorialCasesOpened EditorialCase[] @relation("EditorialCaseOpenedBy")
 
   id           String @id @default(uuid()) @db.Uuid
   email        String @unique @db.VarChar(320)
@@ -834,6 +836,7 @@ model CatalogChangeRequest {
   assets CatalogAsset[]
   revisions CatalogRevision[]
   productionCountries CatalogProductionCountry[]
+  editorialCase EditorialCase? @relation("EditorialLegacyCase")
 
   @@index([animeId, state, createdAt, id])
   @@index([state, createdAt, id])
@@ -1228,4 +1231,72 @@ model AnimeMusicUsage {
   @@index([animeId, usageType])
   @@index([animeMusicTrackId, usageType])
   @@index([isPublished, usageType])
+}
+
+// AN-160A: Private editorial foundations only. No importer, resolver, canonical write,
+// publication permission or transition logic is enabled by these declarations.
+enum EditorialSubjectType {
+  ANIME
+  ANIME_EPISODE
+  MANGA_WORK
+  MANGA_VOLUME
+  MANGA_CHAPTER
+  MUSIC_TRACK
+  MUSIC_RECORDING
+  MUSIC_RELEASE
+  MUSIC_ARTIST
+}
+
+enum EditorialCaseState {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+// Untrusted, private source staging; never expose payload in public queries.
+model CatalogCandidate {
+  id String @id @default(uuid()) @db.Uuid
+  subjectType EditorialSubjectType
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(500)
+  sourcePayload Json
+  normalizedPayload Json?
+  fingerprint String? @db.Char(64)
+  isQuarantined Boolean @default(true)
+  creatorId String? @db.Uuid
+  creator User? @relation("CatalogCandidateCreator", fields: [creatorId], references: [id], onDelete: Restrict)
+  editorialCases EditorialCase[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subjectType, createdAt, id])
+  @@index([sourceName, sourceReference])
+  @@index([creatorId, createdAt, id])
+  @@index([isQuarantined, createdAt, id])
+}
+
+// Generic root. APPROVED is an editorial state, NOT canonical publication.
+// Polymorphic canonicalEntityId must be validated in a later service layer.
+model EditorialCase {
+  id String @id @default(uuid()) @db.Uuid
+  subjectType EditorialSubjectType
+  candidateId String? @db.Uuid
+  candidate CatalogCandidate? @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  legacyChangeRequestId String? @unique @db.Uuid
+  legacyChangeRequest CatalogChangeRequest? @relation("EditorialLegacyCase", fields: [legacyChangeRequestId], references: [id], onDelete: Restrict)
+  canonicalEntityId String? @db.Uuid
+  state EditorialCaseState @default(DRAFT)
+  revision Int @default(1)
+  openedById String? @db.Uuid
+  openedBy User? @relation("EditorialCaseOpenedBy", fields: [openedById], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([candidateId])
+  @@index([subjectType, state, createdAt, id])
+  @@index([subjectType, canonicalEntityId])
+  @@index([openedById, createdAt, id])
 }
