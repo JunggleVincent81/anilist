@@ -80,6 +80,7 @@ export function AdminCatalogDashboard() {
           <Link href="/admin/catalog/relations" className={controlStyle}>Relation Manager</Link>
           <Link href="/admin/catalog/evidence" className={controlStyle}>Media &amp; Evidence</Link>
           <Link href="/admin/catalog/editorial" className={controlStyle}>Editorial Review &amp; Audit</Link>
+          <Link href="/admin/catalog/import" className={controlStyle}>Smart Import &amp; History</Link>
           <Link href="/admin/catalog/review" className={controlStyle}>Review submissions</Link><button type="button" onClick={() => setRefresh((n) => n + 1)} className={controlStyle}>Refresh data</button>
         </div>
       </header>

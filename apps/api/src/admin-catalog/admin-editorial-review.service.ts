@@ -18,10 +18,17 @@ type Candidate = Prisma.CatalogCandidateGetPayload<{select:typeof candidateSelec
 type CaseItem = Prisma.EditorialCaseGetPayload<{select:typeof itemSelect}>;
 type CaseDetail = Prisma.EditorialCaseGetPayload<{select:typeof detailSelect}>;
 
-function isManual(row:Candidate):boolean {
+function isReviewable(row:Candidate):boolean {
   const p = row.sourcePayload;
-  if (row.fingerprint !== null || !p || typeof p !== 'object' || Array.isArray(p)) return false;
+  if (!p || typeof p !== 'object' || Array.isArray(p)) return false;
   if (p.sourceReference !== row.sourceReference) return false;
+  if (p.entryType === 'STRUCTURED_IMPORT_V1') {
+    return typeof row.fingerprint === 'string' && /^[a-f0-9]{64}$/.test(row.fingerprint) &&
+      p.subjectType === row.subjectType && typeof p.fileSha256 === 'string' &&
+      /^[a-f0-9]{64}$/.test(p.fileSha256) && typeof p.batchId === 'string' && UUID.test(p.batchId) &&
+      typeof p.line === 'number' && Number.isInteger(p.line) && p.line >= 2 && p.line <= 101;
+  }
+  if (row.fingerprint !== null) return false;
   if (p.entryType === 'MANUAL_STRUCTURED_DRAFT_V1') return p.subjectType === row.subjectType;
   return p.entryType === 'MANUAL_ANIME_DRAFT' && row.subjectType === 'ANIME';
 }
@@ -73,7 +80,7 @@ export class AdminEditorialReviewService {
     return this.prisma.$transaction(async tx=>{
       await this.admin(actorId,tx);
       const candidate=await tx.catalogCandidate.findUnique({where:{id:input.candidateId},select:candidateSelect});
-      if(!candidate||candidate.creatorId!==actorId||!candidate.isQuarantined||!isManual(candidate)||
+      if(!candidate||candidate.creatorId!==actorId||!candidate.isQuarantined||!isReviewable(candidate)||
           !candidate.normalizedPayload||typeof candidate.normalizedPayload!=='object'||Array.isArray(candidate.normalizedPayload)||candidate._count.editorialCases!==0)
         throw new ConflictException('Owned, untouched manual draft required.');
       const canonical=input.canonicalEntityId??null;
@@ -86,7 +93,7 @@ export class AdminEditorialReviewService {
       }
       // This private row lock invalidates stale draft versions; the linked case prevents future edits.
       const locked=await tx.catalogCandidate.updateMany({where:{id:candidate.id,subjectType:candidate.subjectType,
-        creatorId:actorId,isQuarantined:true,fingerprint:null,updatedAt:candidate.updatedAt,editorialCases:{none:{}}},
+        creatorId:actorId,isQuarantined:true,fingerprint:candidate.fingerprint,updatedAt:candidate.updatedAt,editorialCases:{none:{}}},
         data:{updatedAt:new Date(Math.max(Date.now(),candidate.updatedAt.getTime()+1))}});
       if(locked.count!==1)throw new ConflictException('Candidate changed or already linked to review.');
       const created=await tx.editorialCase.create({data:{subjectType:candidate.subjectType,candidateId:candidate.id,

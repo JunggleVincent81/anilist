@@ -17,6 +17,8 @@ import { AdminStructuredCandidatesService } from './admin-structured-candidates.
 import { AdminRelationManagerService } from './admin-relation-manager.service.js';
 import { AdminMediaEvidenceService } from './admin-media-evidence.service.js';
 import { AdminEditorialReviewService } from './admin-editorial-review.service.js';
+import { AdminSmartImportService } from './admin-smart-import.service.js';
+import { AdminImportHistoryInput, AdminImportHistoryPageType, AdminImportBatchType, PreviewAdminImportInput, ApplyAdminImportInput } from './admin-smart-import.graphql.js';
 import { AdminEditorialPageInput, AdminEditorialCasePageType, AdminEditorialCaseItemType, AdminEditorialCaseDetailType, CreateAdminEditorialCaseInput, TransitionAdminEditorialCaseInput } from './admin-editorial-review.graphql.js';
 import { AdminMediaEvidencePageInput, AdminSourceDossierPageType, AdminMediaIntakePageType, AdminSourceDossierType, AdminMediaIntakeType, CreateAdminSourceDossierInput, CreateAdminMediaIntakeInput } from './admin-media-evidence.graphql.js';
 import { AdminRelationPageInput, AdminRelationProposalPageType, AdminRelationProposalType, AdminRelationCanonicalPageType, CreateAdminRelationProposalInput } from './admin-relation-manager.graphql.js';
@@ -30,7 +32,7 @@ import { AdminSynopsisDraftType, CreateAdminSynopsisDraftInput, UpdateAdminSynop
 
 @Resolver()
 export class AdminCatalogResolver {
-  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService, private readonly structuredCandidates: AdminStructuredCandidatesService, private readonly relations: AdminRelationManagerService, private readonly mediaEvidence: AdminMediaEvidenceService, private readonly editorialReview: AdminEditorialReviewService) {}
+  constructor(private readonly adminCatalog: AdminCatalogService, private readonly synopsisDrafts: AdminSynopsisDraftService, private readonly synopsisReviews: AdminSynopsisReviewService, private readonly synopsisQueue: AdminSynopsisQueueService, private readonly workspaceOverview: AdminWorkspaceOverviewService, private readonly animeCandidates: AdminAnimeCandidatesService, private readonly domainRecords: AdminDomainRecordsService, private readonly structuredCandidates: AdminStructuredCandidatesService, private readonly relations: AdminRelationManagerService, private readonly mediaEvidence: AdminMediaEvidenceService, private readonly editorialReview: AdminEditorialReviewService, private readonly smartImport: AdminSmartImportService) {}
 
   @Query(() => AdminWorkspaceOverviewType)
   @UseGuards(RolesGuard)
@@ -188,6 +190,30 @@ export class AdminCatalogResolver {
   transitionAdminEditorialCase(@Args('input') input: TransitionAdminEditorialCaseInput,
     @Context() context: GraphQLAuthContext): Promise<AdminEditorialCaseItemType> {
     return this.editorialReview.transition(context.currentUser!.id, input);
+  }
+
+  @Query(() => AdminImportHistoryPageType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  adminImportHistory(@Args('input', {type: () => AdminImportHistoryInput, nullable:true}) input: AdminImportHistoryInput|undefined,
+    @Context() context: GraphQLAuthContext): Promise<AdminImportHistoryPageType> {
+    return this.smartImport.history(context.currentUser!.id,input);
+  }
+
+  @Mutation(() => AdminImportBatchType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  previewAdminImport(@Args('input') input:PreviewAdminImportInput,
+    @Context() context:GraphQLAuthContext):Promise<AdminImportBatchType> {
+    return this.smartImport.preview(context.currentUser!.id,input);
+  }
+
+  @Mutation(() => AdminImportBatchType)
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  applyAdminImport(@Args('input') input:ApplyAdminImportInput,
+    @Context() context:GraphQLAuthContext):Promise<AdminImportBatchType> {
+    return this.smartImport.apply(context.currentUser!.id,input);
   }
 
   @Query(() => AdminCatalogOverviewType)

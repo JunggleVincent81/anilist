@@ -152,6 +152,7 @@ model User {
   catalogAssetsUploaded CatalogAsset[] @relation("CatalogAssetUploader")
   catalogRevisionsAuthored CatalogRevision[] @relation("CatalogRevisionActor")
   catalogCandidatesCreated CatalogCandidate[] @relation("CatalogCandidateCreator")
+  importBatches CatalogImportBatch[] @relation("CatalogImportBatchCreator")
   mediaSourceDossiers CatalogSourceDossier[] @relation("CatalogSourceDossierCreatedBy")
   mediaIntakesUploaded CatalogMediaIntake[] @relation("CatalogMediaIntakeUploader")
   catalogRelationProposals CatalogRelationProposal[] @relation("CatalogRelationProposalCreator")
@@ -1287,6 +1288,7 @@ model CatalogCandidate {
   @@index([sourceName, sourceReference])
   @@index([creatorId, createdAt, id])
   @@index([isQuarantined, createdAt, id])
+  @@index([subjectType, fingerprint])
 }
 
 // Generic root. APPROVED is an editorial state, NOT canonical publication.
@@ -1485,4 +1487,35 @@ model CatalogMediaIntake {
   @@unique([animeId, kind, sha256])
   @@index([uploaderId, createdAt, id])
   @@index([sourceDossierId])
+}
+
+// P16-W08: Preview/apply batch history for private staged CSV/XLSX, not publication.
+enum CatalogImportStatus {
+  PREVIEWED
+  APPLIED
+}
+
+model CatalogImportBatch {
+  id String @id @default(uuid()) @db.Uuid
+  creatorId String @db.Uuid
+  creator User @relation("CatalogImportBatchCreator", fields:[creatorId], references:[id], onDelete:Restrict)
+  subjectType EditorialSubjectType
+  fileName String @db.VarChar(150)
+  fileSha256 String @db.Char(64)
+  format String @db.VarChar(8)
+  sourceName String @db.VarChar(150)
+  sourceReference String @db.VarChar(450)
+  status CatalogImportStatus @default(PREVIEWED)
+  rowCount Int
+  validCount Int
+  invalidCount Int
+  createdCount Int @default(0)
+  skippedCount Int @default(0)
+  rows Json
+  createdAt DateTime @default(now())
+  appliedAt DateTime?
+
+  @@unique([creatorId, subjectType, fileSha256])
+  @@index([creatorId, createdAt, id])
+  @@index([status, createdAt, id])
 }

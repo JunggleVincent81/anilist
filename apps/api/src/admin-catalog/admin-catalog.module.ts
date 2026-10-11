@@ -12,9 +12,10 @@ import { AdminStructuredCandidatesService } from './admin-structured-candidates.
 import { AdminRelationManagerService } from './admin-relation-manager.service.js';
 import { AdminMediaEvidenceService } from './admin-media-evidence.service.js';
 import { AdminEditorialReviewService } from './admin-editorial-review.service.js';
+import { AdminSmartImportService } from './admin-smart-import.service.js';
 
 @Module({
   imports: [AuthModule],
-  providers: [AdminCatalogResolver, AdminCatalogService, AdminWorkspaceOverviewService, AdminAnimeCandidatesService, AdminDomainRecordsService, AdminStructuredCandidatesService, AdminRelationManagerService, AdminMediaEvidenceService, AdminEditorialReviewService, AdminSynopsisDraftService, AdminSynopsisReviewService, AdminSynopsisQueueService],
+  providers: [AdminCatalogResolver, AdminCatalogService, AdminWorkspaceOverviewService, AdminAnimeCandidatesService, AdminDomainRecordsService, AdminStructuredCandidatesService, AdminRelationManagerService, AdminMediaEvidenceService, AdminEditorialReviewService, AdminSmartImportService, AdminSynopsisDraftService, AdminSynopsisReviewService, AdminSynopsisQueueService],
 })
 export class AdminCatalogModule {}
